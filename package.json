@@ -1,0 +1,13 @@
+{
+  "name": "lingo-online-prototype",
+  "version": "1.0.0",
+  "description": "Online Lingo-style multiplayer game with timer and 4/5-letter modes",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.8.1"
+  }
+}

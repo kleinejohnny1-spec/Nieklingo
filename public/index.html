@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lingo Online v3</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <div>
+        <h1>Lingo Online v3</h1>
+        <p class="sub">Twee spelers, internet-ready, aftelklok, 5-, 6- en 7-ballenmodus. Strak, stevig en gewoon speelbaar.</p>
+      </div>
+      <div class="badge">Medion-proof</div>
+    </header>
+
+    <main class="grid">
+      <section class="panel lobby">
+        <h2>Lobby</h2>
+        <label>Jouw naam
+          <input id="playerName" maxlength="20" placeholder="Bijv. Niekol" />
+        </label>
+
+        <div class="actions">
+          <button id="createBtn">Kamer maken</button>
+          <div class="join-wrap">
+            <input id="roomCodeInput" maxlength="6" placeholder="Kamercode" />
+            <button id="joinBtn">Deelnemen</button>
+          </div>
+        </div>
+
+        <div class="room-box">
+          <div>Kamercode: <strong id="roomCode">-</strong></div>
+          <div>Status: <span id="phase">Niet verbonden</span></div>
+        </div>
+
+        <div class="share-box">
+          <div class="share-label">Directe uitnodigingslink</div>
+          <div class="share-row">
+            <input id="inviteLink" readonly placeholder="Maak eerst een kamer" />
+            <button id="copyInviteBtn" class="secondary">Kopieer</button>
+          </div>
+        </div>
+
+        <div class="mode-switch triple">
+          <button class="mode active" data-mode="5">5 ballen</button>
+          <button class="mode" data-mode="6">6 ballen</button>
+          <button class="mode" data-mode="7">7 ballen</button>
+        </div>
+
+        <div class="actions stacked">
+          <button id="readyBtn">Ik ben klaar</button>
+          <button id="startBtn">Start wedstrijd</button>
+        </div>
+
+        <div class="status-grid">
+          <div class="mini-box">
+            <div class="mini-label">Resterende pogingen</div>
+            <div id="guessesLeft" class="mini-value">5</div>
+          </div>
+          <div class="mini-box">
+            <div class="mini-label">Jij bent</div>
+            <div id="turnState" class="mini-value">-</div>
+          </div>
+        </div>
+
+        <p id="message" class="message">Maak een kamer of sluit aan.</p>
+      </section>
+
+      <section class="panel game">
+        <div class="topbar">
+          <div>
+            <h2>Spelbord</h2>
+            <div id="clue" class="clue">-</div>
+          </div>
+          <div class="timer-wrap">
+            <div class="timer-label">Aftelklok</div>
+            <div id="timer" class="timer">30</div>
+            <div class="timer-bar"><div id="timerFill" class="timer-fill"></div></div>
+          </div>
+        </div>
+
+        <div id="players" class="players"></div>
+        <div id="board" class="board"></div>
+
+        <div class="guess-box">
+          <input id="guessInput" placeholder="Typ je woord" maxlength="5" autocomplete="off" />
+          <button id="submitBtn">Bevestig</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
