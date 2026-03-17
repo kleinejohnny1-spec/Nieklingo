@@ -54,7 +54,6 @@ function escapeHtml(value) {
 function renderPlayers(players = []) {
   els.players.innerHTML = '';
   localState.players = players;
-
   players.forEach(p => {
     const card = document.createElement('div');
     card.className = 'player-card' + (p.isTurn ? ' turn' : '') + (p.id === socket.id ? ' me' : '');
@@ -68,11 +67,11 @@ function renderPlayers(players = []) {
 
   const me = players.find(p => p.id === socket.id);
   els.turnState.textContent = me ? (me.isTurn ? 'Aan zet' : 'Wachten') : '-';
+  els.startBtn.disabled = !(localState.players.length >= 1 && localState.players.length <= 2 && localState.players.every(p => p.ready));
 }
 
 function renderBoard(board = [], modeLength = 5, currentGuess = '', currentRow = 0) {
   els.board.innerHTML = '';
-
   board.forEach((row, index) => {
     const rowEl = document.createElement('div');
     rowEl.className = 'row';
@@ -213,26 +212,20 @@ socket.on('roomState', state => {
   localState.modeLength = state.modeLength;
   localState.timerEndsAt = state.timerEndsAt;
   localState.roundSeconds = state.roundSeconds || 30;
-  localState.ready = !!(state.players || []).find(p => p.id === socket.id)?.ready;
-
   els.roomCode.textContent = state.roomCode;
   els.phase.textContent = state.phase;
   els.clue.textContent = state.clue || '-';
   els.guessesLeft.textContent = state.guessesLeft ?? '-';
-  els.readyBtn.textContent = localState.ready ? 'Toch niet klaar' : 'Ik ben klaar';
   showMessage(state.message || '');
   renderPlayers(state.players || []);
   renderBoard(state.board || [], state.modeLength, state.currentGuess, state.currentRow);
   setModeButtons(state.modeLength);
   updateInviteLink(state.roomCode);
-
   const me = (state.players || []).find(p => p.id === socket.id);
   const myTurn = !!me?.isTurn;
-  const canType = myTurn && state.phase === 'playing';
-
-  els.guessInput.disabled = !canType;
-  els.submitBtn.disabled = !canType;
-  if (canType) els.guessInput.focus();
+  els.guessInput.disabled = !myTurn || state.phase !== 'playing';
+  els.submitBtn.disabled = !myTurn || state.phase !== 'playing';
+  if (myTurn && state.phase === 'playing') els.guessInput.focus();
 });
 
 socket.on('errorMessage', msg => showMessage(msg));
@@ -246,14 +239,11 @@ setInterval(() => {
     lastDisplayedSecond = null;
     return;
   }
-
   const msLeft = Math.max(0, localState.timerEndsAt - Date.now());
   const seconds = Math.max(0, Math.ceil(msLeft / 1000));
   els.timer.textContent = String(seconds);
-
   const pct = Math.max(0, Math.min(100, (msLeft / (localState.roundSeconds * 1000)) * 100));
   els.timerFill.style.width = `${pct}%`;
-
   if (seconds <= 5 && seconds > 0 && seconds !== lastDisplayedSecond) {
     playSound('tick');
   }

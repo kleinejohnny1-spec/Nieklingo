@@ -73,7 +73,6 @@ button:hover:not(:disabled) { filter: brightness(1.05); }
 .join-wrap input { margin: 0; }
 .room-box, .mode-switch, .message, .share-box, .status-grid { margin-top: 12px; }
 .mode-switch { display: flex; gap: 10px; }
-.mode-switch.triple { display: grid; grid-template-columns: repeat(3, 1fr); }
 .mode { flex: 1; background: #31415f; }
 .mode.active { background: var(--accent); color: #222; }
 .share-label, .mini-label { color: var(--muted); font-size: 13px; margin-bottom: 6px; }

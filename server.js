@@ -11,7 +11,6 @@ const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 const ROUND_SECONDS = 30;
 const MAX_ATTEMPTS = 5;
-const ALLOWED_LENGTHS = [5, 6, 7];
 
 function readWordFile(filename) {
   return fs.readFileSync(path.join(__dirname, 'words', filename), 'utf8')
@@ -70,11 +69,8 @@ function evaluateGuess(guess, answer) {
 }
 
 function nextPlayerIndex(room) {
+  if (!room.players || room.players.length <= 1) return 0;
   return room.turnIndex === 0 ? 1 : 0;
-}
-
-function pointsForLength(length) {
-  return length * 10;
 }
 
 function emitRoomState(roomCode) {
@@ -100,7 +96,7 @@ function emitRoomState(roomCode) {
     clue: room.answer ? room.answer[0] + '•'.repeat(room.answer.length - 1) : '',
     message: room.message,
     guessesLeft: room.board ? Math.max(0, room.board.length - room.currentRow) : MAX_ATTEMPTS,
-    canStart: room.players.length === 2 && room.players.every(p => p.ready),
+    canStart: room.players.length >= 1 && room.players.length <= 2 && room.players.every(p => p.ready),
   };
 
   io.to(roomCode).emit('roomState', payload);
@@ -126,21 +122,21 @@ function setupRoomTicker(roomCode) {
   room.interval = setInterval(() => {
     const liveRoom = rooms.get(roomCode);
     if (!liveRoom || liveRoom.phase !== 'playing') return;
-
     if (Date.now() >= liveRoom.timerEndsAt) {
-      liveRoom.message = `Tijd op. ${liveRoom.players[liveRoom.turnIndex].name} verliest deze beurt.`;
+      const solo = liveRoom.players.length === 1;
+      liveRoom.message = solo
+        ? `Tijd op. Nieuwe poging voor ${liveRoom.players[0].name}.`
+        : `Tijd op. ${liveRoom.players[liveRoom.turnIndex].name} verliest deze beurt.`;
       liveRoom.turnIndex = nextPlayerIndex(liveRoom);
       liveRoom.currentGuess = '';
       liveRoom.currentRow += 1;
       resetTimer(roomCode);
-
       if (liveRoom.currentRow >= liveRoom.board.length) {
         liveRoom.message = `Niemand vond het woord. Het woord was ${liveRoom.answer}. Nieuwe ronde gestart.`;
         io.to(roomCode).emit('playSound', { type: 'lose' });
         startRound(roomCode, liveRoom.modeLength);
         return;
       }
-
       emitRoomState(roomCode);
     }
   }, 250);
@@ -149,7 +145,6 @@ function setupRoomTicker(roomCode) {
 function startRound(roomCode, length) {
   const room = rooms.get(roomCode);
   if (!room) return;
-
   room.modeLength = length;
   room.answer = randomWord(length);
   room.board = createEmptyBoard(length);
@@ -157,7 +152,9 @@ function startRound(roomCode, length) {
   room.currentRow = 0;
   room.currentGuess = '';
   room.phase = 'playing';
-  room.message = `Nieuwe ronde: ${length}-letterwoord. ${room.players[room.turnIndex].name} begint.`;
+  room.message = room.players.length === 1
+    ? `Solo-ronde gestart: ${length}-letterwoord. Succes ${room.players[0].name}.`
+    : `Nieuwe ronde: ${length}-letterwoord. ${room.players[room.turnIndex].name} begint.`;
   resetTimer(roomCode);
   setupRoomTicker(roomCode);
   emitRoomState(roomCode);
@@ -175,8 +172,8 @@ function getRoomBySocket(socket) {
 }
 
 function normalizeLength(modeLength) {
-  const value = Number(modeLength);
-  return ALLOWED_LENGTHS.includes(value) ? value : 5;
+  const n = Number(modeLength);
+  return [5, 6, 7].includes(n) ? n : 5;
 }
 
 io.on('connection', (socket) => {
@@ -193,9 +190,8 @@ io.on('connection', (socket) => {
       answer: '',
       timerEndsAt: null,
       interval: null,
-      message: 'Lobby aangemaakt. Deel de kamercode of uitnodigingslink en wacht op speler 2.',
+      message: 'Lobby aangemaakt. Je kunt solo starten of de kamercode delen voor speler 2.',
     };
-
     rooms.set(roomCode, room);
     socket.join(roomCode);
     emitRoomState(roomCode);
@@ -207,9 +203,8 @@ io.on('connection', (socket) => {
     if (!room) return socket.emit('errorMessage', 'Kamer niet gevonden.');
     if (room.players.some(p => p.id === socket.id)) return;
     if (room.players.length >= 2) return socket.emit('errorMessage', 'Kamer is al vol.');
-
     room.players.push({ id: socket.id, name: (name || 'Speler 2').slice(0, 20), score: 0, ready: false });
-    room.message = 'Speler 2 is binnen. Zet jullie klaar en start.';
+    room.message = 'Speler 2 is binnen. Jullie kunnen samen starten.';
     socket.join(roomCode);
     emitRoomState(roomCode);
   });
@@ -220,7 +215,6 @@ io.on('connection', (socket) => {
     const { code, room } = found;
     const player = room.players.find(p => p.id === socket.id);
     if (!player) return;
-
     player.ready = !!ready;
     room.message = `${player.name} is ${player.ready ? 'klaar' : 'niet klaar'}.`;
     emitRoomState(code);
@@ -230,11 +224,9 @@ io.on('connection', (socket) => {
     const found = getRoomBySocket(socket);
     if (!found) return;
     const { code, room } = found;
-
-    if (room.players.length !== 2) return socket.emit('errorMessage', 'Je hebt 2 spelers nodig.');
-    if (!room.players.every(p => p.ready)) return socket.emit('errorMessage', 'Beide spelers moeten klaar staan.');
-
-    room.turnIndex = Math.floor(Math.random() * 2);
+    if (room.players.length < 1 || room.players.length > 2) return socket.emit('errorMessage', 'Deze kamer ondersteunt 1 of 2 spelers.');
+    if (!room.players.every(p => p.ready)) return socket.emit('errorMessage', room.players.length === 1 ? 'Zet jezelf eerst op klaar.' : 'Beide spelers moeten klaar staan.');
+    room.turnIndex = room.players.length === 1 ? 0 : Math.floor(Math.random() * 2);
     startRound(code, normalizeLength(modeLength));
   });
 
@@ -244,7 +236,6 @@ io.on('connection', (socket) => {
     const { code, room } = found;
     if (room.phase !== 'playing') return;
     if (room.players[room.turnIndex]?.id !== socket.id) return;
-
     const normalized = (value || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, room.modeLength);
     room.currentGuess = normalized;
     emitRoomState(code);
@@ -256,18 +247,17 @@ io.on('connection', (socket) => {
     const { code, room } = found;
     if (room.phase !== 'playing') return;
     if (room.players[room.turnIndex]?.id !== socket.id) return;
-
     const guess = room.currentGuess;
-    if (!guess || guess.length !== room.modeLength) {
-      return socket.emit('errorMessage', `Vul een woord van ${room.modeLength} letters in.`);
-    }
+    if (!guess || guess.length !== room.modeLength) return socket.emit('errorMessage', `Vul een woord van ${room.modeLength} letters in.`);
 
     const row = evaluateGuess(guess, room.answer);
     room.board[room.currentRow] = row;
 
     if (guess === room.answer) {
-      room.players[room.turnIndex].score += pointsForLength(room.modeLength);
-      room.message = `${room.players[room.turnIndex].name} raadde ${room.answer} goed.`;
+      room.players[room.turnIndex].score += room.modeLength * 10;
+      room.message = room.players.length === 1
+        ? `Lekker. Je raadde ${room.answer} goed.`
+        : `${room.players[room.turnIndex].name} raadde ${room.answer} goed.`;
       io.to(code).emit('playSound', { type: 'win' });
       room.turnIndex = nextPlayerIndex(room);
       startRound(code, room.modeLength);
@@ -285,7 +275,9 @@ io.on('connection', (socket) => {
       return;
     }
 
-    room.message = `${room.players[room.turnIndex].name} is aan de beurt.`;
+    room.message = room.players.length === 1
+      ? `${room.players[0].name}, volgende poging.`
+      : `${room.players[room.turnIndex].name} is aan de beurt.`;
     io.to(code).emit('playSound', { type: 'submit' });
     resetTimer(code);
     emitRoomState(code);
@@ -295,7 +287,6 @@ io.on('connection', (socket) => {
     const found = getRoomBySocket(socket);
     if (!found) return;
     const { code, room } = found;
-
     room.modeLength = normalizeLength(modeLength);
     room.message = `Spelmodus ingesteld op ${room.modeLength} ballen.`;
     emitRoomState(code);
@@ -305,15 +296,12 @@ io.on('connection', (socket) => {
     const found = getRoomBySocket(socket);
     if (!found) return;
     const { code, room } = found;
-
     room.players = room.players.filter(p => p.id !== socket.id);
     clearRoomTimer(room);
-
     if (room.players.length === 0) {
       rooms.delete(code);
       return;
     }
-
     room.phase = 'lobby';
     room.message = 'Een speler is weggevallen. Wacht op herverbinding of start later opnieuw.';
     room.board = null;
@@ -326,6 +314,6 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Lingo online v3 draait op http://localhost:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Lingo online v4 draait op http://localhost:${PORT}`);
 });
