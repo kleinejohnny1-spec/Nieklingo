@@ -1,0 +1,14 @@
+{
+  "name": "lingo-online-v3-clean",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Lingo Online V3 Clean - multiplayer met duidelijke audio en mobiele unlock",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  }
+}

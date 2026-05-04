@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Lingo Online V3 Clean</title>
+  <link rel="stylesheet" href="/style.css?v=cleanfix1" />
+</head>
+<body>
+  <div class="app">
+    <aside class="panel sidebar">
+      <h1>LINGO ONLINE</h1>
+      <p class="sub">V3 Definitief. Multiplayer, harde tik per seconde, duidelijke lettergeluiden, confetti bij winst en een mobiel invoervak dat zichtbaar blijft.</p>
+
+      <div class="section">
+        <h2>1. Jij</h2>
+        <input class="small" id="nameInput" type="text" maxlength="20" placeholder="Jouw naam" value="Speler" />
+      </div>
+
+      <div class="section">
+        <h2>2. Kamer</h2>
+        <div class="row2">
+          <button class="primary" id="createRoomBtn">Kamer maken</button>
+          <button class="secondary" id="joinRoomBtn">Kamer joinen</button>
+        </div>
+        <div style="margin-top:10px">
+          <input class="small" id="roomCodeInput" type="text" maxlength="5" placeholder="KAMERCODE" />
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Jouw kamer</h2>
+        <div class="score-card">
+          <div class="score-label">Kamercode</div>
+          <div class="score-value code-box" id="roomCodeDisplay">-----</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Instellingen</h2>
+        <div class="mini">Alleen de host kan dit aanpassen.</div>
+        <div class="row3" style="margin-top:10px">
+          <button class="lenBtn" data-len="4">4</button>
+          <button class="lenBtn active" data-len="5">5</button>
+          <button class="lenBtn" data-len="6">6</button>
+        </div>
+        <div class="row4" style="margin-top:10px">
+          <button class="timeBtn active" data-time="30">30s</button>
+          <button class="timeBtn" data-time="60">60s</button>
+          <button class="timeBtn" data-time="90">90s</button>
+          <button class="timeBtn" data-time="120">120s</button>
+        </div>
+        <div class="row3" style="margin-top:10px">
+          <button class="diffBtn" data-diff="makkelijk">Makkelijk</button>
+          <button class="diffBtn active" data-diff="normaal">Normaal</button>
+          <button class="diffBtn" data-diff="pittig">Pittig</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Spelers</h2>
+        <div id="playersList" class="mini">Nog niemand verbonden.</div>
+      </div>
+
+      <div class="section">
+        <h2>Score</h2>
+        <div id="scoreList" class="mini">Nog geen score.</div>
+      </div>
+
+      <div class="section">
+        <div class="row3 action-row">
+          <button class="primary" id="startRoundBtn" disabled>Start ronde</button>
+          <button class="secondary" id="pauseBtn" disabled>PAUZE</button>
+          <button class="secondary" id="copyCodeBtn" disabled>Kopieer code</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="panel game">
+      <div class="status">
+        <div class="status-main">
+          <div class="status-title" id="statusTitle">Nog geen kamer</div>
+          <div class="status-sub" id="statusSub">Maak eerst een kamer of join er één.</div>
+        </div>
+        <div class="pill" id="turnPill">Beurt: -</div>
+        <div class="pill" id="timerPill">Tijd: -</div>
+      </div>
+
+      <div class="timerbar-wrap"><div class="timerbar" id="timerBar"></div></div>
+
+      <div class="board-wrap">
+        <div class="board len-5" id="board"></div>
+      </div>
+
+      <div class="guessbar">
+  <div id="fixedLetterBox" class="fixed-letter">?</div>
+
+  <input id="guessInput" type="text" maxlength="6" autocomplete="off" autocorrect="off" autocapitalize="characters" inputmode="text" spellcheck="false" placeholder="Typ je woord" disabled />
+
+  <button class="primary" id="submitBtn" disabled>CONTROLEER</button>
+  <button class="secondary" id="clearBtn" disabled>WIS</button>
+  </div>
+      <div class="notice" id="notice"></div>
+
+      <div class="legend mini">
+        <div><strong>Groen</strong> = goed</div>
+        <div><strong>Geel</strong> = zit erin</div>
+        <div><strong>Grijs</strong> = fout</div>
+        <div><strong>Beginletter</strong> staat vast</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/client.js?v=cleanfix1"></script>
+</body>
+</html>
