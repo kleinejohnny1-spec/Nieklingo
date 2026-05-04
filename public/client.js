@@ -849,21 +849,7 @@ if (input) {
 
 
 
-#pauseBtn {
-  background: linear-gradient(180deg, #334155, #0f172a) !important;
-  color: white !important;
-  font-weight: 900 !important;
-}
 
-#submitBtn {
-  background: linear-gradient(180deg, #2563eb, #1e40af) !important;
-  color: white !important;
-  font-weight: 900 !important;
-}
 
-#clearBtn {
-  background: linear-gradient(180deg, #475569, #1e293b) !important;
-  color: white !important;
-  font-weight: 900 !important;
-}
+
 
