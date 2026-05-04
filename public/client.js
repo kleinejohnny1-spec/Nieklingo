@@ -847,3 +847,47 @@ if (input) {
   });
 }
 
+/* ===== UX POLISH: modernere knoppen ===== */
+
+button {
+  transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+}
+
+#startRoundBtn {
+  background: linear-gradient(180deg, #22c55e, #15803d) !important;
+  color: #052e16 !important;
+  font-weight: 900 !important;
+}
+
+#pauseBtn {
+  background: linear-gradient(180deg, #334155, #0f172a) !important;
+  color: white !important;
+  font-weight: 900 !important;
+}
+
+#submitBtn {
+  background: linear-gradient(180deg, #2563eb, #1e40af) !important;
+  color: white !important;
+  font-weight: 900 !important;
+}
+
+#clearBtn {
+  background: linear-gradient(180deg, #475569, #1e293b) !important;
+  color: white !important;
+  font-weight: 900 !important;
+}
+
