@@ -218,7 +218,7 @@ function createRoom(hostSocket) {
   const room = {
     code,
     players: [],
-    hostId: hostSocket.id,
+    hostId: null,
     settings: { wordLength: 5, timeLimit: 30, difficulty: "normaal" },
     scores: {},
     roundWins: {},
@@ -314,41 +314,59 @@ console.log("STARTER IS:", nextStarter);
 }
 
 io.on("connection", (socket) => {
-  socket.on("room:create", ({ name }) => {
+    socket.on("room:create", ({ name, playerId }) => {
     const safeName = String(name || "Speler 1").trim().slice(0, 20) || "Speler 1";
 
-   const room = createRoom(socket);
-room.players.push({ id: socket.id, name: safeName, connected: true });
+const room = createRoom(socket);
+room.hostId = playerId;
 
-room.scores[socket.id] = 0;
-room.roundWins[socket.id] = 0;   // 👈 deze toevoegen
+room.players.push({
+  id: playerId,
+  socketId: socket.id,
+  name: safeName,
+  connected: true
+});
+
+room.scores[playerId] = 0;
+room.roundWins[playerId] = 0;
+
+
 
 socket.join(room.code);
-socket.emit("self:update", { id: socket.id, roomCode: room.code });
+socket.emit("self:update", { id: playerId, roomCode: room.code });
 
 console.log("ROOM GEMAAKT:", room.code, safeName, socket.id);
 emitRoom(room);
 });
 
-  socket.on("room:join", ({ code, name }) => {
-    console.log("JOIN POGING:", code, name, socket.id);
+  socket.on("room:join", ({ code, name, playerId }) => {
+  console.log("JOIN POGING:", code, name, socket.id);
 
     const room = rooms.get(String(code || "").toUpperCase());
     if (!room) return socket.emit("error:message", "Kamer niet gevonden.");
     if (room.players.length >= 2) return socket.emit("error:message", "Deze kamer zit al vol.");
 
     const safeName = String(name || "Speler 2").trim().slice(0, 20) || "Speler 2";
-    room.players.push({ id: socket.id, name: safeName, connected: true });
-    room.scores[socket.id] = room.scores[socket.id] || 0;
-    room.roundWins[socket.id] = room.roundWins[socket.id] || 0; 
+    
+room.players.push({
+  id: playerId,
+  socketId: socket.id,
+  name: safeName,
+  connected: true
+});
+
+room.scores[playerId] = room.scores[playerId] || 0;
+room.roundWins[playerId] = room.roundWins[playerId] || 0;
     socket.join(room.code);
-    socket.emit("self:update", { id: socket.id, roomCode: room.code });
+    socket.emit("self:update", { id: playerId, roomCode: room.code });
     emitRoom(room);
     });
 
     socket.on("settings:update", ({ code, settings }) => {
     const room = rooms.get(String(code || "").toUpperCase());
-    if (!room || room.hostId !== socket.id) return;
+    const player = room?.players.find((p) => p.socketId === socket.id);
+
+    if (!room || room.hostId !== player?.id) return;
     if (room.round && (room.round.status === "playing" || room.round.status === "paused")) return;
 
     const wordLength = Number(settings?.wordLength) || room.settings.wordLength;
@@ -368,7 +386,9 @@ emitRoom(room);
 
   socket.on("round:start", ({ code }) => {
     const room = rooms.get(String(code || "").toUpperCase());
-    if (!room || room.hostId !== socket.id) return;
+    const player = room?.players.find((p) => p.socketId === socket.id);
+
+    if (!room || room.hostId !== player?.id) return;
 
     const result = startRound(room);
     if (!result.ok) socket.emit("error:message", result.error);
@@ -378,8 +398,8 @@ emitRoom(room);
     console.log("PAUZE KNOP ONTVANGEN", code);
 
     const room = rooms.get(String(code || "").toUpperCase());
-    if (!room || room.hostId !== socket.id || !room.round) return;
-
+    const player = room?.players.find((p) => p.socketId === socket.id);
+    if (!room || room.hostId !== player?.id) return;
     if (room.round.status === "playing") {
       room.round.status = "paused";
       room.round.message = "Spel gepauzeerd door de host.";
@@ -395,7 +415,9 @@ emitRoom(room);
     const room = rooms.get(String(code || "").toUpperCase());
     if (!room || !room.round || room.round.status !== "playing") return;
 
-    if (room.round.currentTurn !== socket.id) {
+    const player = room.players.find((p) => p.socketId === socket.id);
+
+    if (room.round.currentTurn !== player?.id) {
       return socket.emit("error:message", "Wacht op je beurt.");
     }
 
@@ -419,14 +441,14 @@ emitRoom(room);
         locked: i === 0
       };
     }
-   if (cleaned === room.round.target) {
+  if (cleaned === room.round.target) {
 
-   room.roundWins[socket.id] = (room.roundWins[socket.id] || 0) + 1;
+  room.roundWins[player.id] = (room.roundWins[player.id] || 0) + 1;
 
   return endRound(
     room,
-    `${room.players.find((p) => p.id === socket.id)?.name || "Speler"} raadde het woord en wint de ronde.`,
-    socket.id
+    `${room.players.find((p) => p.id === player.id)?.name || "Speler"} raadde het woord en wint de ronde.`,
+    player.id
   );
 }
 
@@ -436,7 +458,7 @@ emitRoom(room);
       return endRound(room, `Geen pogingen meer. Het woord was ${room.round.target}.`, null);
     }
 
-    const currentIndex = room.players.findIndex((p) => p.id === socket.id);
+    const currentIndex = room.players.findIndex((p) => p.id === player.id);
     const nextIndex = currentIndex === 0 ? 1 : 0;
 
     room.round.currentTurn = room.players[nextIndex].id;

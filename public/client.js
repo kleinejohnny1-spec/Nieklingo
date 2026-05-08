@@ -1,6 +1,14 @@
 const socket = io({
   transports: ["websocket", "polling"]
 });
+
+let playerId = localStorage.getItem("playerId");
+
+if (!playerId) {
+  playerId = "player-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  localStorage.setItem("playerId", playerId);
+}
+
 let previousBoard = [];
 let flipLock = false;
 let finalTriggered = false;
@@ -789,7 +797,10 @@ els.createRoomBtn.addEventListener("click", async () => {
 
   console.log("KLIK KAMER MAKEN - NIEUWE CLIENT.JS WORDT GEBRUIKT");
 
-  socket.emit("room:create", { name: getName() });
+  socket.emit("room:create", {
+  name: getName(),
+  playerId
+});
   setNotice("Kamer wordt aangemaakt...", "ok");
 });
 
@@ -798,7 +809,11 @@ els.joinRoomBtn.addEventListener("click", async () => {
   if (!code) return setNotice("Vul eerst een kamercode in.", "error");
   await unlockAudio(false);
   setNotice("");
-  socket.emit("room:join", { code, name: getName() });
+  socket.emit("room:join", {
+  code,
+  name: getName(),
+  playerId
+ });
 });
 
 els.copyCodeBtn.addEventListener("click", async () => {
