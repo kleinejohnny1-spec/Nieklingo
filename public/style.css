@@ -105,10 +105,10 @@ html, body {
 }
 
 .board-wrap {
-  display: flex;
-  justify-content: center;
+  display: flex !important;
+  justify-content: center !important;
   align-items: flex-start;
-  padding-top: 10px;
+  padding-top: 90px !important;
 }
 
 .board {
@@ -116,6 +116,30 @@ html, body {
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  margin-top: 20px !important;
+}
+
+.top-scorebar {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+
+  margin: 6px 0 10px 0;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  color: #fff;
+
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.top-scorebar span {
+  background: rgba(0,0,0,.25);
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.12);
 }
 
 .board-row {
@@ -126,6 +150,7 @@ html, body {
 .board.len-4 .board-row { grid-template-columns: repeat(4, 48px); }
 .board.len-5 .board-row { grid-template-columns: repeat(5, 48px); }
 .board.len-6 .board-row { grid-template-columns: repeat(6, 48px); }
+
 
 .cell {
   border-radius: 10px;
@@ -230,6 +255,12 @@ button:active:not(:disabled) {
   transform: translateY(1px);
 }
 
+.guessbar button {
+  min-height: 44px !important;
+  font-size: 10px !important;
+  padding: 5px !important;
+}
+
 button:disabled {
   opacity: .38;
   filter: grayscale(.25);
@@ -326,9 +357,9 @@ button:disabled {
   }
 
   .cell {
-    width: 64px;
-    height: 64px;
-    font-size: 34px;
+    width: 64px !important;
+    height: 64px !important;
+    font-size: 40px !important;
   }
 
   .board.len-6 .cell {
@@ -338,15 +369,15 @@ button:disabled {
   }
 
   .board {
-    gap: 10px;
+    gap: 10px; !important;
   }
 
   .board-row {
-    gap: 8px;
+    gap: 8px; !important;
   }
 
   .guessbar {
-    position: static;
+    position: sticky;
     margin-top: 12px;
     border-radius: 18px;
   }
@@ -361,61 +392,7 @@ button:disabled {
 }
 
 /* OPPO */
-@media (max-width: 700px) {
-  .app {
-    display: flex;
-    flex-direction: column;
-    padding: 4px;
-    gap: 4px;
-  }
 
-  .game {
-    min-height: var(--vvh, 100dvh);
-    padding: 4px;
-    padding-bottom: 82px;
-  }
-
-  .status-title {
-    font-size: 20px;
-  }
-
-  .board {
-    gap: 3px;
-  }
-
-  .board-row {
-    gap: 3px;
-  }
-
-  .board.len-5 .board-row {
-    grid-template-columns: repeat(5, 40px);
-  }
-
-  .cell {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
-  }
-
-  .guessbar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    gap: 6px;
-    padding: 8px;
-  }
-
-  #guessInput {
-    min-height: 48px;
-    font-size: 20px;
-  }
-
-  .guessbar button {
-    min-height: 48px;
-    font-size: 14px;
-  }
-}
 
 /* PC: onderste actieknoppen altijd zichtbaar */
 @media (min-width: 701px) {
@@ -543,17 +520,7 @@ button.danger {
   color: white;
 }
 
-@media (max-width: 700px) {
-  .sidebar {
-    display: block !important;
-    max-width: 100% !important;
-    margin-bottom: 10px;
-  }
-}
 
-body.kb-open {
-  overflow: hidden;
-}
 
 /* ===== SCOREBORD POLISH ===== */
 
@@ -637,4 +604,486 @@ body.kb-open {
   60% { transform: translate(-4px, 2px); }
   80% { transform: translate(4px, -2px); }
   100% { transform: translate(0, 0); }
+}
+
+/* ===== TIMER PULSE ===== */
+
+.timerbar.critical {
+  animation: timerPulse 0.6s infinite;
+}
+
+@keyframes timerPulse {
+  0%   { transform: scaleY(1);   opacity: 1; }
+  50%  { transform: scaleY(1.3); opacity: 0.7; }
+  100% { transform: scaleY(1);   opacity: 1; }
+}
+
+/* ===== HARD SHAKE (FOUT WOORD) ===== */
+
+.shake {
+  animation: screenShakeHard 0.7s ease;
+}
+
+@keyframes screenShakeHard {
+  0%   { transform: translate(0, 0); }
+  15%  { transform: translate(-8px, 3px); }
+  30%  { transform: translate(8px, -3px); }
+  45%  { transform: translate(-6px, 2px); }
+  60%  { transform: translate(6px, -2px); }
+  75%  { transform: translate(-4px, 1px); }
+  90%  { transform: translate(4px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* HEAVY SHAKE VOOR EINDE */
+@keyframes endShake {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-6px, 3px); }
+  40% { transform: translate(6px, -3px); }
+  60% { transform: translate(-4px, 2px); }
+  80% { transform: translate(4px, -2px); }
+  100% { transform: translate(0, 0); }
+}
+
+.board.end-shake {
+  animation: endShake 0.6s ease;
+}
+
+@keyframes endWrongFlash {
+  0% { background: #4a5568; transform: scale(1); }
+  20% { background: #ff0000; box-shadow: 0 0 24px rgba(255,0,0,.95); }
+  45% { background: #7f1d1d; transform: scale(1.06); }
+  70% { background: #ff0000; }
+  100% { transform: scale(1); }
+}
+
+.board-row.final-wrong-flash .cell {
+  animation: endWrongFlash 1.4s ease !important;
+}
+
+@keyframes finalBoardShake {
+  0% { transform: translateX(0); }
+  10% { transform: translateX(-8px); }
+  20% { transform: translateX(8px); }
+  30% { transform: translateX(-7px); }
+  40% { transform: translateX(7px); }
+  50% { transform: translateX(-5px); }
+  60% { transform: translateX(5px); }
+  70% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+.board.final-shake {
+  animation: finalBoardShake 1.2s ease !important;
+}
+
+.freeze {
+  pointer-events: none;
+  transform: scale(0.98);
+  transition: transform 0.1s;
+}
+
+/* ===== OPPO MOBILE COMPACT FIX ===== */
+
+
+/* ===== OPPO BUTTONS BETER LEESBAAR ===== */
+
+
+/* ===== OPPO SCROLL TERUG - INSTELLINGEN BEREIKBAAR ===== */
+
+
+/* ===== OPPO SCROLL RESET - NIET MEER VASTTREKKEN ===== */
+
+/* ===== OPPO CLEAN REBUILD ===== */
+@media (max-width: 700px) {
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .app {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 6px !important;
+  }
+
+  .sidebar {
+    display: block !important;
+    padding: 10px !important;
+    border-radius: 18px !important;
+  }
+
+  .sidebar h1 {
+    font-size: 24px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .sidebar h2 {
+    font-size: 17px !important;
+    margin: 8px 0 4px !important;
+  }
+
+  #playersList,
+  #scoreList {
+    display: block !important;
+    font-size: 13px !important;
+    line-height: 1.3 !important;
+  }
+
+  .game {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+
+    padding: 8px !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  .status {
+    width: 100% !important;
+    gap: 6px !important;
+  }
+
+  .status-title {
+    font-size: 20px !important;
+    line-height: 1.05 !important;
+  }
+
+  .pill {
+    font-size: 12px !important;
+    padding: 7px 10px !important;
+  }
+
+  .timerbar-wrap {
+    height: 10px !important;
+  }
+
+  .board-wrap {
+  width: 100% !important;
+
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+
+  overflow: visible !important;
+
+  padding: 0 !important;
+  margin: 8px auto !important;
+}
+  .board {
+  margin: 0 auto !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+
+  gap: 5px !important;
+}
+
+  .board-row {
+    gap: 4px !important;
+  }
+
+  .board.len-4 .board-row {
+    grid-template-columns: repeat(4, 52px) !important;
+  }
+
+  .board.len-5 .board-row {
+    grid-template-columns: repeat(5, 50px) !important;
+  }
+
+  .board.len-6 .board-row {
+    grid-template-columns: repeat(6, 42px) !important;
+  }
+
+  .cell {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 28px !important;
+  }
+
+  .board.len-6 .cell {
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 20px !important;
+  }
+
+  .guessbar {
+    position: relative !important;
+    bottom: auto !important;
+    width: 100% !important;
+
+    display: grid !important;
+    grid-template-columns: 1fr 86px 36px !important;
+
+    gap: 6px !important;
+
+    padding: 8px !important;
+    margin-top: 12px !important;
+
+    border-radius: 16px !important;
+
+    z-index: 100 !important;
+  }
+
+  #guessInput {
+    min-height: 46px !important;
+    font-size: 22px !important;
+    padding: 8px 10px !important;
+  }
+
+  .guessbar button {
+    min-height: 46px !important;
+    font-size: 10px !important;
+    padding: 6px !important;
+  }
+
+  .action-row {
+    position: static !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+
+    margin-top: 42px !important;
+  }
+
+  #copyCodeBtn {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+/* OPPO KEYBOARD CLEAN FIX */
+@media (max-width: 700px) {
+ body.kb-open .status {
+  display: none !important;
+}
+
+body.kb-open .timerbar-wrap {
+  display: block !important;
+  width: 100% !important;
+  height: 8px !important;
+  margin: 0 auto 4px auto !important;
+}
+
+  body.kb-open .game {
+    padding: 4px !important;
+    overflow: visible !important;
+  }
+
+  body.kb-open .board-wrap {
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+
+  body.kb-open .board {
+    margin: 0 auto !important;
+    gap: 3px !important;
+  }
+
+  body.kb-open .board-row {
+    gap: 3px !important;
+  }
+
+  body.kb-open .board.len-5 .board-row {
+    grid-template-columns: repeat(5, 42px) !important;
+  }
+
+  body.kb-open .cell {
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 23px !important;
+  }
+
+  body.kb-open .guessbar {
+    margin-top: 6px !important;
+    padding: 6px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  body.kb-open .sidebar {
+  opacity: 1 !important;
+  }
+
+  body.kb-open .app {
+    padding: 2px !important;
+    gap: 0 !important;
+  }
+}
+
+.top-scorebar {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 8px auto;
+  padding: 8px 12px;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+
+  border-radius: 14px;
+  background: linear-gradient(180deg, #123a7a, #08245a);
+  border: 1px solid rgba(255,255,255,.22);
+
+  color: white;
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing: .3px;
+
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,.25),
+    0 6px 18px rgba(0,0,0,.25);
+}
+
+.top-scorebar span {
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .top-scorebar {
+    max-width: 330px;
+    margin-bottom: 5px;
+    padding: 6px 9px;
+    font-size: 13px;
+    border-radius: 11px;
+  }
+}
+
+/* TIMERBALK ALTIJD ZICHTBAAR OP OPPO */
+@media (max-width: 700px) {
+  .timerbar-wrap {
+    display: block !important;
+    width: 100% !important;
+    max-width: 330px !important;
+    height: 12px !important;
+
+    margin: 4px auto 6px auto !important;
+
+    background: #020617 !important;
+    border: 2px solid rgba(255,255,255,.55) !important;
+    border-radius: 999px !important;
+
+    overflow: hidden !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .timerbar {
+    display: block !important;
+    height: 100% !important;
+    min-width: 4px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  body.kb-open .timerbar-wrap {
+    display: block !important;
+  }
+}
+
+/* TIMERBALK ALTIJD ZICHTBAAR OP OPPO */
+  @media (max-width: 700px) {
+  .timerbar-wrap {
+    display: block !important;
+    width: 100% !important;
+    max-width: 330px !important;
+    height: 12px !important;
+
+    margin: 4px auto 6px auto !important;
+
+    background: #020617 !important;
+    border: 2px solid rgba(255,255,255,.55) !important;
+    border-radius: 999px !important;
+
+    overflow: hidden !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .timerbar {
+    display: block !important;
+    height: 100% !important;
+    min-width: 4px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  body.kb-open .timerbar-wrap {
+    display: block !important;
+  }
+}
+
+/* OPPO SCOREBALK VAST BOVEN BORD */
+@media (max-width: 700px) {
+  @media (max-width: 700px) {
+  .top-scorebar {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 300px !important;
+
+    margin: 4px auto 6px auto !important;
+    padding: 7px 10px !important;
+
+    justify-content: space-between !important;
+    align-items: center !important;
+
+    background: rgba(2, 6, 23, .78) !important;
+    border: 2px solid rgba(255,255,255,.45) !important;
+    border-radius: 14px !important;
+
+    color: #fff !important;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+
+    position: relative !important;
+    top: auto !important;
+    z-index: 30 !important;
+  }
+
+  .top-scorebar span {
+    color: #fff !important;
+    text-shadow: 0 0 6px rgba(0,0,0,.8) !important;
+    max-width: 135px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  body.kb-open .top-scorebar {
+    display: flex !important;
+    margin-top: 2px !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .timerbar-wrap {
+    display: block !important;
+    width: 100% !important;
+    max-width: 330px !important;
+    height: 10px !important;
+    margin: 4px auto 6px auto !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+.top-scorebar {
+  font-size: 12px;
+  gap: 8px;
+  margin-top: 2px;
+  margin-bottom: 6px;
+}
+
+
+  body.kb-open .timerbar-wrap {
+    display: block !important;
+  
+  }
 }

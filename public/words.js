@@ -11,7 +11,19 @@ const WORDS = {
     "plan","plek","prijs","raad","reis","rood","rook","ruim","scha","slag",
     "snee","stad","stem","stok","taal","team","tijd","toon","trap","trek",
     "tuin","uur","veld","vier","voet","vorm","wand","warm","water","werk",
-    "wind","wolf","zaak","zand","zeep","zien","zout","zwem"
+    "wind","wolf","zaak","zand","zeep","zien","zout","zwem","adem","afwas",
+    "anker","appel","arend","baker","bende","bloem",
+    "blus","bonus","breed","brief","brood","buik","chips","clown",
+    "dader","deken","draad","droom","duif","engel","friet","gamer",
+    "geit","gifje","glim","grap","groef","haren","haven","heks",
+    "ijsje","joker","kaars","kamer","katje","kerel","kist","klap",
+    "klok","knaap","knoop","koker","kroon","kruis","laden","laser",
+    "leger","links","maker","markt","mesje","meter","molen","motor",
+    "nevel","noten","oever","olijf","panda","petje","pizza","plant",
+    "plein","prins","radio","regen","robot","roker","schaap","schip",
+    "sjaal","slang","smaak","stoel","storm","strip","super","trein",
+    "truck","vader","vlees","vloer","vogel","wagen","water","winst",
+    "zebra","zilver","zomer","zwaard"
   ],
 
   5: [
@@ -26,7 +38,20 @@ const WORDS = {
     "reden","regel","ritme","rondt","samen","scherp","shirt","smaak","spoor",
     "sport","staat","stand","steen","stoel","straat","tafel","tekst","tempo",
     "thema","trots","vloer","vraag","vrede","waarde","water","wegen","wereld",
-    "werk","winst","woord","zacht","zeker","zicht","zomer","zwaar"
+    "werk","winst","woord","zacht","zeker","zicht","zomer","zwaar","akker","alarm",
+     "album","ander","arena","armen","banen","barst",
+     "beken","bingo","blauw","bonus","borst","bruin","chaos","clown",
+     "daler","dames","draad","drank","drift","duwen","eigen","fijne",
+     "flora","forum","frame","gamer","gaven","glans","glimp","groei",
+     "haven","helder","ijsje","jaren","joker","juist","kabel","kaart",
+     "keuze","klimt","knoop","kogel","koren","krist","laden","lager",
+     "lente","level","links","maker","maten","motto","muren","muziek",
+     "neren","noord","oever","omweg","paden","peper","piram","plank",
+     "ploeg","poets","polen","prins","quota","raden","regen","robot",
+     "route","ruzie","saldo","sfeer","shift","skate","slang","snoep",
+     "spalk","spijk","storm","straf","stuur","super","toast","trein",
+     "troep","truck","typen","varen","vegen","vlees","vogel","wagen",
+     "waren","wazig","wezen","wilde","wonen","zebra","zeven","zilver"
   ],
 
   6: [

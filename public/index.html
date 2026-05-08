@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Lingo Online V3 Clean</title>
-  <link rel="stylesheet" href="/style.css?v=cleanback1" />
+  <link rel="stylesheet" href="/style.css?v=timer100">
 </head>
 <body>
   <div class="app">
@@ -72,6 +72,7 @@
           <button class="primary" id="startRoundBtn" disabled>Start ronde</button>
           <button class="secondary" id="pauseBtn" disabled>PAUZE</button>
           <button class="secondary" id="copyCodeBtn" disabled>Kopieer code</button>
+          <button class="secondary" id="shareCodeBtn">WHATSAPP</button>
         </div>
       </div>
     </aside>
@@ -88,7 +89,12 @@
 
       <div class="timerbar-wrap"><div class="timerbar" id="timerBar"></div></div>
 
-      <div class="board-wrap">
+     <div id="topScoreBar" class="top-scorebar">
+  <span>Speler 1: 0</span>
+  <span>Speler 2: 0</span>
+</div>
+
+         <div class="board-wrap">
         <div class="board len-5" id="board"></div>
       </div>
 
@@ -113,6 +119,6 @@
 
   <script src="/socket.io/socket.io.js"></script>
 <script src="/words.js?v=mega1"></script>
-<script src="/client.js?v=fix7"></script>
+<script src="/client.js?v=timer100"></script>
 </body>
 </html>

@@ -3,6 +3,8 @@ const socket = io({
 });
 let previousBoard = [];
 let flipLock = false;
+let finalTriggered = false;
+let lastFinalDramaKey = "";
 const state = { selfId: null, roomCode: "", room: null };
 let prevRoomSnapshot = null;
 
@@ -10,12 +12,15 @@ const els = {
   nameInput: document.getElementById("nameInput"),
   createRoomBtn: document.getElementById("createRoomBtn"),
   joinRoomBtn: document.getElementById("joinRoomBtn"),
+  
+  topScoreBar: document.getElementById("topScoreBar"),
   roomCodeInput: document.getElementById("roomCodeInput"),
   roomCodeDisplay: document.getElementById("roomCodeDisplay"),
   playersList: document.getElementById("playersList"),
   scoreList: document.getElementById("scoreList"),
   startRoundBtn: document.getElementById("startRoundBtn"),
   copyCodeBtn: document.getElementById("copyCodeBtn"),
+  shareCodeBtn: document.getElementById("shareCodeBtn"),
   pauseBtn: document.getElementById("pauseBtn"),
   board: document.getElementById("board"),
   statusTitle: document.getElementById("statusTitle"),
@@ -193,6 +198,64 @@ function installAudioOverlay() {
   overlay.appendChild(box);
   document.body.appendChild(overlay);
   audio.overlay = overlay;
+}
+
+  function playFinalWrongDrama() {
+  
+  const round = state.room?.round;
+  const key = `${round?.target || round?.revealWord || ""}-${round?.timeLeft || ""}-${round?.message || ""}`;
+
+  if (lastFinalDramaKey === key) return;
+  lastFinalDramaKey = key;
+
+  console.log("🔥 FINAL WRONG DRAMA START");
+
+  if (navigator.vibrate) {
+  navigator.vibrate(0); // oude trilling resetten
+
+  setTimeout(() => {
+    navigator.vibrate([300, 120, 300, 120, 700]);
+  }, 50);
+
+  setTimeout(() => {
+    navigator.vibrate([200, 80, 500]);
+  }, 900);
+}
+
+  playEndSound();
+  playEndSound();
+
+ 
+  if (!round || !round.board) return;
+
+  const lastRowIndex = round.board.length - 1;
+  const rows = document.querySelectorAll(".board-row");
+  const lastRowEl = rows[lastRowIndex];
+  const boardEl = document.querySelector(".board");
+
+  if (lastRowEl) {
+    lastRowEl.classList.remove("final-wrong-flash");
+    void lastRowEl.offsetWidth;
+    lastRowEl.classList.add("final-wrong-flash");
+
+    setTimeout(() => {
+      lastRowEl.classList.remove("final-wrong-flash");
+    }, 1400);
+  }
+
+  if (boardEl) {
+    boardEl.classList.remove("final-shake");
+    void boardEl.offsetWidth;
+    boardEl.classList.add("final-shake");
+
+    setTimeout(() => {
+      boardEl.classList.remove("final-shake");
+    }, 1200);
+  }
+
+  setTimeout(() => {
+    finalTriggered = false;
+  }, 2500);
 }
 
 function showGameOver(title, text) {
@@ -381,55 +444,57 @@ function buildBoard(wordLength = 5, boardState = null) {
     });
   }
 
-  board.forEach((row, rowIndex) => {
-    const rowEl = document.createElement("div");
-    rowEl.className = "board-row";
+board.forEach((row, rowIndex) => {
+  const rowEl = document.createElement("div");
+  rowEl.className = "board-row";
 
-    const prevRow = previousBoard[rowIndex] || [];
+  const prevRow = previousBoard[rowIndex] || [];
 
-    row.forEach((cell, cellIndex) => {
-      const cellEl = document.createElement("div");
-      cellEl.className = "cell";
+  row.forEach((cell, cellIndex) => {
+    const cellEl = document.createElement("div");
+    cellEl.className = "cell";
 
-      const prevCell = prevRow[cellIndex] || {};
-      const shouldFlip = rowIndex === flipRowIndex && cell.state;
+    const prevCell = prevRow[cellIndex] || {};
+    const shouldFlip = rowIndex === flipRowIndex && cell.state;
 
-      if (shouldFlip) {
-        cellEl.textContent = prevCell.letter || "";
-        if (prevCell.state) cellEl.classList.add(prevCell.state);
-      } else {
-        cellEl.textContent = cell.letter || "";
-        if (cell.state) cellEl.classList.add(cell.state);
-      }
+    if (shouldFlip) {
+      cellEl.textContent = prevCell.letter || "";
+      if (prevCell.state) cellEl.classList.add(prevCell.state);
+    } else {
+      cellEl.textContent = cell.letter || "";
+      if (cell.state) cellEl.classList.add(cell.state);
+    }
 
-      rowEl.appendChild(cellEl);
+    if (shouldFlip) {
+      flipLock = true;
 
-      if (shouldFlip) {
-        flipLock = true;
+      setTimeout(() => {
+        playFlipSound();
+        cellEl.classList.add("flip");
 
         setTimeout(() => {
-          playFlipSound();
-          cellEl.classList.add("flip");
+          cellEl.textContent = cell.letter || "";
+          cellEl.className = "cell";
+          if (cell.state) cellEl.classList.add(cell.state);
+        }, 180);
+      }, cellIndex * 180);
+    }
 
-          setTimeout(() => {
-            cellEl.textContent = cell.letter || "";
-            cellEl.classList.remove("good", "present", "bad", "correct", "absent");
-            cellEl.classList.add(cell.state);
-          }, 180);
-        }, cellIndex * 180);
-      }
-    });
-
-    els.board.appendChild(rowEl);
+    rowEl.appendChild(cellEl);
   });
 
-  previousBoard = JSON.parse(JSON.stringify(board));
+  // 🔥 DEZE MISSTE BIJ JOU
+  els.board.appendChild(rowEl);
+});
 
-  if (flipRowIndex >= 0) {
-    setTimeout(() => {
-      flipLock = false;
-    }, wordLength * 180 + 600);
-  }
+// 🔥 SLUIT buildBoard netjes af
+previousBoard = JSON.parse(JSON.stringify(board));
+
+if (flipRowIndex >= 0) {
+  setTimeout(() => {
+    flipLock = false;
+  }, wordLength * 180 + 600);
+}
 }
 
  
@@ -447,10 +512,27 @@ function updatePlayers() {
     els.playersList.textContent = "Nog niemand verbonden.";
     return;
   }
+
+
+
   els.playersList.innerHTML = state.room.players.map((p, index) => {
     const hostBadge = p.id === state.room.hostId ? ' <span class="badge">host</span>' : "";
     const meBadge = p.id === state.selfId ? ' <span class="badge">jij</span>' : "";
     return `<div>Speler ${index + 1}: <strong>${escapeHtml(p.name)}</strong>${hostBadge}${meBadge}</div>`;
+  }).join("");
+}
+
+function updateTopScoreBar(room) {
+  if (!els.topScoreBar || !room || !room.players) return;
+
+  const scores = room.scores || {};
+  const players = room.players;
+
+  els.topScoreBar.innerHTML = players.map((p, index) => {
+    const name = p.name || `Speler ${index + 1}`;
+    const score = scores[p.id] || 0;
+
+    return `<span>${name}: ${score}</span>`;
   }).join("");
 }
 
@@ -521,8 +603,8 @@ function updateStatus() {
     hideGameOver();
     hidePauseOverlay();
 
-    els.statusTitle.textContent = room.playerCount < 2 ? "Wacht op speler 2" : "Klaar om te starten";
-    els.statusSub.textContent = room.playerCount < 2 ? "Stuur de kamercode naar je maatje." : "De host kan nu de ronde starten.";
+    els.statusTitle.textContent = room.players.length < 2 ? "Wacht op speler 2" : "Klaar om te starten";
+    els.statusSub.textContent = room.players.length < 2 ? "Stuur de kamercode naar je maatje." : "De host kan nu de ronde starten.";
     els.turnPill.textContent = "Beurt: -";
     els.timerPill.textContent = `Tijd: ${room.settings.timeLimit}`;
     els.timerBar.style.width = "100%";
@@ -530,9 +612,15 @@ function updateStatus() {
 
     buildBoard(room.settings.wordLength);
     return;
-  }
+    }
 
-  buildBoard(round.wordLength, round.board);
+    if (round && round.board) {
+  // hier doen we nu niks meer met rode shake
+  // final drama gebeurt straks alleen bij Game Over
+    }
+
+buildBoard(round.wordLength, round.board);
+
 
   const pct = Math.max(0, Math.min(100, (round.timeLeft / round.timeLimit) * 100));
   els.timerBar.style.width = `${pct}%`;
@@ -569,6 +657,7 @@ if (round.currentTurn === state.selfId) {
 function syncUI() {
   updatePlayers();
   updateScores();
+  updateTopScoreBar(state.room);
   updateSettingsButtons();
   updateStatus();
   updateControls();
@@ -619,9 +708,26 @@ function handleAudioTransitions(prevRoom, nextRoom) {
   }
 
   if (prevRound && nextRound) {
-    if (prevRound.currentTurn !== nextRound.currentTurn && nextRound.status === "playing") {
-      playTurnSound();
-    }
+   if (prevRound.currentTurn !== nextRound.currentTurn && nextRound.status === "playing") {
+  playTurnSound();
+
+ setTimeout(() => {
+  const rowIndex = Math.max(0, (nextRound.currentRow || 1) - 1);
+  const rows = document.querySelectorAll(".board-row");
+  const row = rows[rowIndex];
+
+  if (!row) return;
+
+  row.classList.remove("wrong-flash");
+  void row.offsetWidth;
+  row.classList.add("wrong-flash");
+
+  setTimeout(() => {
+    row.classList.remove("wrong-flash");
+  }, 950);
+}, 80);
+  }
+
 
     if (prevRound.status === "playing" && nextRound.status === "paused") {
       playPauseSound();
@@ -650,26 +756,26 @@ function handleAudioTransitions(prevRoom, nextRoom) {
       if (nextRound.timeLeft > 10) audio.warnedAt.clear();
     }
 
-    if (prevRound.status === "playing" && nextRound.status === "ended") {
-      const winner = nextRoom?.players?.find((p) => p.id === nextRound.winnerId);
+   if (nextRound.status === "ended") {
+  const winner = nextRoom?.players?.find((p) => p.id === nextRound.winnerId);
 
-      if (nextRound.winnerId) {
-        playWinSound();
-        launchConfetti();
-      } else {
-        playEndSound();
-        document.body.classList.add("shake");
-      }
+  if (nextRound.winnerId) {
+    playWinSound();
+    launchConfetti();
+  } else {
+    console.log("GAME OVER ZONDER WINNAAR");
+    playFinalWrongDrama();
+  }
 
-      setTimeout(() => {
-        showGameOver(
-          winner ? `${winner.name} wint de ronde` : "Game over",
-          nextRound.revealWord
-            ? `Het woord was ${nextRound.revealWord}.`
-            : (nextRound.message || "De ronde is afgelopen.")
-        );
-      }, 1600);
-    }
+  setTimeout(() => {
+    showGameOver(
+      winner ? `${winner.name} wint de ronde` : "Game over",
+      nextRound.revealWord
+        ? `Het woord was ${nextRound.revealWord}.`
+        : (nextRound.message || "De ronde is afgelopen.")
+    );
+  }, 1600);
+}
   }
 }
 
@@ -684,6 +790,7 @@ els.createRoomBtn.addEventListener("click", async () => {
   console.log("KLIK KAMER MAKEN - NIEUWE CLIENT.JS WORDT GEBRUIKT");
 
   socket.emit("room:create", { name: getName() });
+  setNotice("Kamer wordt aangemaakt...", "ok");
 });
 
 els.joinRoomBtn.addEventListener("click", async () => {
@@ -695,15 +802,54 @@ els.joinRoomBtn.addEventListener("click", async () => {
 });
 
 els.copyCodeBtn.addEventListener("click", async () => {
-  if (!state.roomCode) return;
+  const code = state.room?.code || state.roomCode;
+  if (!code) return;
+
+  const joinUrl = `${location.origin}?room=${code}`;
+
+  const text =
+`🎮 Join mijn Lingo kamer!
+
+Kamercode: ${code}
+
+${joinUrl}`;
+
   try {
-    await navigator.clipboard.writeText(state.roomCode);
-    setNotice("Kamercode gekopieerd.", "ok");
+    if (navigator.clipboard && window.isSecureContext) {
+  await navigator.clipboard.writeText(text);
+} else {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.left = "-999999px";
+
+  document.body.appendChild(textarea);
+
+  textarea.focus();
+  textarea.select();
+
+  document.execCommand("copy");
+
+  textarea.remove();
+}
+
+    window.open(
+  `https://wa.me/?text=${encodeURIComponent(text)}`,
+  "_blank"
+);
+
+    setNotice("Kamercode + link gekopieerd.", "ok");
+
+    els.copyCodeBtn.textContent = "GEKOPIEERD!";
+
+    setTimeout(() => {
+      els.copyCodeBtn.textContent = "Kopieer code";
+    }, 2000);
+
   } catch {
-    setNotice(`Kopieer deze code handmatig: ${state.roomCode}`, "ok");
+    setNotice(`Kopieer handmatig: ${code}`, "ok");
   }
 });
-
 els.startRoundBtn.addEventListener("click", async () => {
   if (!state.roomCode) return;
   await unlockAudio(false);
@@ -739,38 +885,76 @@ document.querySelectorAll(".diffBtn").forEach((btn) => btn.addEventListener("cli
   emitSettingsUpdate();
 }));
 
-els.submitBtn.addEventListener("click", async () => {
+
+async function submitGuessNow() {
   if (!state.roomCode) return;
+  if (els.submitBtn.disabled) return;
+
   await unlockAudio(false);
   playSubmitSound();
-  socket.emit("guess:submit", { code: state.roomCode, guess: els.guessInput.value });
-  
+
+  socket.emit("guess:submit", {
+    code: state.roomCode,
+    guess: els.guessInput.value
+  });
+
+  setTimeout(() => {
+    document.querySelector(".game")?.scrollIntoView({
+      block: "start",
+      behavior: "auto"
+    });
+  }, 150);
+}
+
+els.submitBtn.addEventListener("pointerdown", async (e) => {
+  e.preventDefault();
+  await submitGuessNow();
 });
 
 els.clearBtn.addEventListener("click", () => {
   els.guessInput.value = "";
+  els.guessInput.dataset.prevValue = "";
+  els.guessInput.focus();
 });
 
 els.guessInput.addEventListener("input", async () => {
   const oldValue = els.guessInput.dataset.prevValue || "";
   const maxLength = Number(els.guessInput.maxLength || 5);
-  els.guessInput.value = els.guessInput.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, maxLength);
+
+  els.guessInput.value = els.guessInput.value
+    .toUpperCase()
+    .replace(/[^A-Z]/g, "")
+    .slice(0, maxLength);
+
   if (els.guessInput.value.length > oldValue.length) {
     await unlockAudio(false);
     playTypeSound();
   }
+
   els.guessInput.dataset.prevValue = els.guessInput.value;
 });
 
-els.guessInput.addEventListener("keydown", (e) => {
+els.guessInput.addEventListener("keydown", async (e) => {
   if (e.key === "Enter" && !els.submitBtn.disabled) {
     e.preventDefault();
-    els.submitBtn.click();
+    await submitGuessNow();
   }
 });
 
-els.roomCodeInput.addEventListener("input", () => {
-  els.roomCodeInput.value = els.roomCodeInput.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 5);
+// OPPO: keyboard open/dicht detectie + beeld rustig houden
+els.guessInput.addEventListener("focus", () => {
+  document.body.classList.add("kb-open");
+
+  setTimeout(() => {
+    document.querySelector(".game")?.scrollIntoView({
+      block: "start",
+      behavior: "auto"
+    });
+  }, 150);
+});
+
+els.guessInput.addEventListener("blur", () => {
+  document.body.classList.remove("kb-open");
 });
 
 socket.on("self:update", ({ id, roomCode }) => {
@@ -781,6 +965,8 @@ socket.on("self:update", ({ id, roomCode }) => {
 
   els.roomCodeInput.value = roomCode || "";
   els.roomCodeDisplay.textContent = roomCode || "-----";
+
+  syncUI();
 });
 
 socket.on("room:update", (room) => {
@@ -792,64 +978,41 @@ socket.on("room:update", (room) => {
   state.roomCode = room.code || state.roomCode;
 
   syncUI();
-  
+
   handleAudioTransitions(prev, room);
 
   prevRoomSnapshot = JSON.parse(JSON.stringify(room));
 });
 
-function syncMobileViewport() {
+socket.on("error:message", (message) => {
+  console.log("SERVER ERROR:", message);
+  setNotice(message, "error");
+  playErrorSound();
+});
 
-  const vv = window.visualViewport;
-  const h = vv ? vv.height : window.innerHeight;
-  document.documentElement.style.setProperty("--vvh", `${h}px`);
-}
-
-window.addEventListener("resize", syncMobileViewport);
-
-if (window.visualViewport) {
-  window.visualViewport.addEventListener("resize", syncMobileViewport);
-  window.visualViewport.addEventListener("scroll", syncMobileViewport);
-}
-
-syncMobileViewport();
-installAudioOverlay();
-
-// OPPO: echte viewport hoogte gebruiken
-function setRealViewportHeight() {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty("--vh", `${vh}px`);
-}
-
-setRealViewportHeight();
-window.addEventListener("resize", setRealViewportHeight);
-
-// OPPO: input zichtbaar houden bij toetsenbord
-const input = document.getElementById("guessInput");
-
-if (input) {
- input.addEventListener("focus", () => {
-  document.body.classList.add("kb-open");
-
+window.addEventListener("load", () => {
   setTimeout(() => {
-    const board = document.getElementById("board");
-    if (!board) return;
-
-    board.scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
+    if (!audio.ready && !audio.overlay) {
+      installAudioOverlay();
+    }
   }, 300);
 });
 
-  input.addEventListener("blur", () => {
-    document.body.classList.remove("kb-open");
-  });
+installAudioOverlay();
+
+const params = new URLSearchParams(window.location.search);
+const roomFromUrl = params.get("room");
+
+if (roomFromUrl) {
+
+  els.roomCodeInput.value = roomFromUrl.toUpperCase();
+
+  setTimeout(() => {
+
+    socket.emit("room:join", {
+      code: roomFromUrl.toUpperCase(),
+      name: getName()
+    });
+
+  }, 600);
 }
-
-
-
-
-
-
-

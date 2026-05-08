@@ -124,7 +124,7 @@ if (!wordCandidates.length) wordCandidates = words.slice();
 const chosenWord = wordCandidates[Math.floor(Math.random() * wordCandidates.length)];
 
 room.recentWords.push(chosenWord);
-while (room.recentWords.length > 20) room.recentWords.shift();
+while (room.recentWords.length > 40) room.recentWords.shift();
 
 return chosenWord;
 }
@@ -188,7 +188,7 @@ function publicRoomState(room) {
     settings: room.settings,
     scores: room.scores,
     roundWins: room.roundWins,
-
+    recentWords: [],
     round: round
       ? {
           status: round.status,
@@ -214,6 +214,7 @@ function emitRoom(room) {
 
 function createRoom(hostSocket) {
   const code = getUniqueCode();
+
   const room = {
     code,
     players: [],
@@ -222,8 +223,12 @@ function createRoom(hostSocket) {
     scores: {},
     roundWins: {},
     firstLetterStats: {},
-    round: null
+    round: null,
+    letterBag: [],
+    lastChosenLetter: null,
+    recentWords: []
   };
+
   rooms.set(code, room);
   return room;
 }
