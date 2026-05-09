@@ -929,7 +929,10 @@ els.submitBtn.addEventListener("pointerdown", async (e) => {
 els.clearBtn.addEventListener("click", () => {
   els.guessInput.value = "";
   els.guessInput.dataset.prevValue = "";
-  els.guessInput.focus();
+
+  if (document.activeElement !== els.guessInput) {
+    els.guessInput.focus();
+  }
 });
 
 els.guessInput.addEventListener("input", async () => {
