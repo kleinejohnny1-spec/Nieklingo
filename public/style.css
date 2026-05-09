@@ -1116,3 +1116,48 @@ body.kb-open .timerbar-wrap {
     bottom: 4px !important;
   }
 }
+
+/* ===== RENDER OPPO VIEWPORT FIX ===== */
+
+@media (max-width: 700px) {
+
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    position: fixed;
+    width: 100%;
+    height: 100dvh;
+  }
+
+  .app {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    overflow: hidden !important;
+  }
+
+  .game {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto !important;
+
+    padding-bottom: 170px !important;
+
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .guessbar {
+    position: sticky !important;
+    bottom: 0;
+    z-index: 9999;
+
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .board {
+    margin-bottom: 18px !important;
+  }
+}
