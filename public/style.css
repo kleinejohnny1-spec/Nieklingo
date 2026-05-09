@@ -902,10 +902,14 @@ body.kb-open .timerbar-wrap {
   }
 
   body.kb-open .cell {
-    width: 42px !important;
-    height: 42px !important;
-    font-size: 23px !important;
-  }
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 20px !important;
+}
+
+body.kb-open .board.len-5 .board-row {
+  grid-template-columns: repeat(5, 36px) !important;
+}
 
   body.kb-open .guessbar {
     margin-top: 6px !important;
