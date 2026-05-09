@@ -901,10 +901,14 @@ body.kb-open .timerbar-wrap {
     grid-template-columns: repeat(5, 42px) !important;
   }
 
-  body.kb-open .cell {
+body.kb-open .cell {
   width: 36px !important;
   height: 36px !important;
   font-size: 20px !important;
+}
+
+body.kb-open .board.len-5 .board-row {
+  grid-template-columns: repeat(5, 36px) !important;
 }
 
 body.kb-open .board.len-5 .board-row {
