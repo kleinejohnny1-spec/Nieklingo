@@ -1093,30 +1093,6 @@ body.kb-open .timerbar-wrap {
   }
 }
 
-/* ===== OPPO RENDER VIEWPORT FIX - 8 MEI ===== */
-@media (max-width: 700px) {
-  .game {
-    justify-content: flex-start !important;
-    padding-top: 6px !important;
-    padding-bottom: 24px !important;
-  }
-
-  .board-wrap {
-    padding-top: 6px !important;
-    margin-top: 2px !important;
-    transform: translateY(8px) !important;
-  }
-
-  body.kb-open .board-wrap {
-    transform: translateY(16px) !important;
-  }
-
-  body.kb-open .guessbar {
-    position: sticky !important;
-    bottom: 4px !important;
-  }
-}
-
 
 /* ===== OPPO RENDER MINI BOTTOM FIX ===== */
 @media (max-width: 700px) {
