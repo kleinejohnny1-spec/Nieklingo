@@ -1117,6 +1117,11 @@ body.kb-open .timerbar-wrap {
   }
 }
 
-/* ===== RENDER OPPO VIEWPORT FIX ===== */
 
+/* ===== OPPO RENDER MINI BOTTOM FIX ===== */
+@media (max-width: 700px) {
+  .game {
+    padding-bottom: 80px !important;
+  }
+}
 
