@@ -1094,10 +1094,5 @@ body.kb-open .timerbar-wrap {
 }
 
 
-/* ===== OPPO RENDER MINI BOTTOM FIX ===== */
-@media (max-width: 700px) {
-  .game {
-    padding-bottom: 180px !important;
-  }
-}
+
 
