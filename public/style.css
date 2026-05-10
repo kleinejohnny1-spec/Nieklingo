@@ -902,13 +902,17 @@ body.kb-open .timerbar-wrap {
   }
 
 body.kb-open .cell {
-  width: 42px !important;
-  height: 42px !important;
-  font-size: 23px !important;
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 20px !important;
 }
 
 body.kb-open .board.len-5 .board-row {
-  grid-template-columns: repeat(5, 42px) !important;
+  grid-template-columns: repeat(5, 36px) !important;
+}
+
+body.kb-open .board.len-5 .board-row {
+  grid-template-columns: repeat(5, 36px) !important;
 }
 
   body.kb-open .guessbar {
@@ -1094,61 +1098,6 @@ body.kb-open .board.len-5 .board-row {
   body.kb-open .timerbar-wrap {
     display: block !important;
   
-  }
-}
-
-/* ===== FINAL OPPO RENDER KEYBOARD COMPACT ===== */
-@media (max-width: 700px) {
-  body.kb-open .sidebar {
-    display: none !important;
-  }
-
-  body.kb-open .top-scorebar {
-    display: none !important;
-  }
-
-  body.kb-open .timerbar-wrap {
-    height: 6px !important;
-    margin: 0 auto 3px auto !important;
-  }
-
-  body.kb-open .game {
-    padding: 2px !important;
-    gap: 3px !important;
-  }
-
-  body.kb-open .board-wrap {
-    margin: 0 auto !important;
-    padding: 0 !important;
-  }
-
-  body.kb-open .board {
-    gap: 2px !important;
-    margin: 0 auto !important;
-  }
-
-  body.kb-open .board-row {
-    gap: 2px !important;
-  }
-
-  body.kb-open .board.len-5 .board-row {
-    grid-template-columns: repeat(5, 40px) !important;
-  }
-
-  body.kb-open .cell {
-    width: 40px !important;
-    height: 40px !important;
-    font-size: 22px !important;
-  }
-
-  body.kb-open .guessbar {
-    margin-top: 4px !important;
-    padding: 5px !important;
-  }
-
-  body.kb-open #guessInput,
-  body.kb-open .guessbar button {
-    min-height: 40px !important;
   }
 }
 
