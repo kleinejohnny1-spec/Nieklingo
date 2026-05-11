@@ -2,6 +2,64 @@ const socket = io({
   transports: ["websocket", "polling"]
 });
 
+/* ===== MOBILE CUSTOM KEYPAD ===== */
+
+function handleVirtualKey(key) {
+  if (!els.guessInput || els.guessInput.disabled) return;
+
+  let value = els.guessInput.value || "";
+
+  if (key === "BACKSPACE") {
+    els.guessInput.value = value.slice(0, -1);
+    return;
+  }
+
+  const max = Number(els.guessInput.maxLength || 6);
+
+  if (value.length >= max) return;
+
+  els.guessInput.value += key.toUpperCase();
+}
+
+function submitVirtualGuess() {
+  if (els.submitBtn && !els.submitBtn.disabled) {
+    els.submitBtn.click();
+  }
+}
+
+function setupMobileKeypad() {
+  if (!els.keyButtons) return;
+
+  els.keyButtons.forEach((btn) => {
+    btn.setAttribute("type", "button");
+
+    btn.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const key = btn.dataset.key;
+      const action = btn.dataset.action;
+
+      if (navigator.vibrate) {
+        navigator.vibrate(12);
+      }
+
+      if (action === "backspace") {
+        handleVirtualKey("BACKSPACE");
+        return;
+      }
+
+      if (action === "submit") {
+        submitVirtualGuess();
+        return;
+      }
+
+      if (key) {
+        handleVirtualKey(key);
+      }
+    });
+  });
+}
 let playerId = localStorage.getItem("playerId");
 
 if (!playerId) {
@@ -39,7 +97,9 @@ const els = {
   guessInput: document.getElementById("guessInput"),
   submitBtn: document.getElementById("submitBtn"),
   clearBtn: document.getElementById("clearBtn"),
-  notice: document.getElementById("notice")
+  notice: document.getElementById("notice"),
+  mobileKeypad: document.getElementById("mobileKeypad"),
+  keyButtons: document.querySelectorAll(".key-btn"),
 };
 
 const audio = {
@@ -578,6 +638,10 @@ function updateControls() {
   document.querySelectorAll(".diffBtn").forEach((btn) => btn.disabled = !host || playing);
 
   els.guessInput.disabled = !myTurn;
+
+if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+  els.guessInput.setAttribute("readonly", true);
+}
   els.submitBtn.disabled = !myTurn;
   els.clearBtn.disabled = false;
 
@@ -663,6 +727,8 @@ if (round.currentTurn === state.selfId) {
 }
 
 function syncUI() {
+  document.body.classList.toggle("room-active", !!state.room);
+
   updatePlayers();
   updateScores();
   updateTopScoreBar(state.room);
@@ -929,10 +995,7 @@ els.submitBtn.addEventListener("pointerdown", async (e) => {
 els.clearBtn.addEventListener("click", () => {
   els.guessInput.value = "";
   els.guessInput.dataset.prevValue = "";
-
-  if (document.activeElement !== els.guessInput) {
-    els.guessInput.focus();
-  }
+  els.guessInput.blur();
 });
 
 els.guessInput.addEventListener("input", async () => {
@@ -1034,3 +1097,5 @@ if (roomFromUrl) {
 
   }, 600);
 }
+
+setupMobileKeypad();

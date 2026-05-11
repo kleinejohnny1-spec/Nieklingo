@@ -27,6 +27,10 @@
           <input class="small" id="roomCodeInput" type="text" maxlength="5" placeholder="KAMERCODE" />
         </div>
       </div>
+     <div class="section score-section">
+    <h2>Score</h2>
+  <div id="scoreList" class="mini">Nog geen score.</div>
+</div>
 
       <div class="section">
         <h2>Jouw kamer</h2>
@@ -62,11 +66,7 @@
         <div id="playersList" class="mini">Nog niemand verbonden.</div>
       </div>
 
-      <div class="section">
-        <h2>Score</h2>
-        <div id="scoreList" class="mini">Nog geen score.</div>
-      </div>
-
+     
       <div class="section">
         <div class="row3 action-row">
           <button class="primary" id="startRoundBtn" disabled>Start ronde</button>
@@ -99,6 +99,7 @@
       </div>
 
  <div class="guessbar">
+
   
   <input id="guessInput" type="text" maxlength="6" autocomplete="off" autocorrect="off" autocapitalize="characters" inputmode="text" spellcheck="false" placeholder="" disabled />
 
@@ -106,8 +107,51 @@
   <button class="secondary" id="clearBtn" disabled>WIS</button>
 </div>
 
-      <div class="notice" id="notice"></div>
+<div id="mobileKeypad" class="mobile-keypad">
 
+  <div class="keypad-row">
+    <button type="button" class="key-btn" data-key="Q">Q</button>
+    <button type="button" class="key-btn" data-key="W">W</button>
+    <button type="button" class="key-btn" data-key="E">E</button>
+    <button type="button" class="key-btn" data-key="R">R</button>
+    <button type="button" class="key-btn" data-key="T">T</button>
+    <button type="button" class="key-btn" data-key="Y">Y</button>
+    <button type="button" class="key-btn" data-key="U">U</button>
+    <button type="button" class="key-btn" data-key="I">I</button>
+    <button type="button" class="key-btn" data-key="O">O</button>
+    <button type="button" class="key-btn" data-key="P">P</button>
+  </div>
+
+  <div class="keypad-row">
+    <button type="button" class="key-btn" data-key="A">A</button>
+    <button type="button" class="key-btn" data-key="S">S</button>
+    <button type="button" class="key-btn" data-key="D">D</button>
+    <button type="button" class="key-btn" data-key="F">F</button>
+    <button type="button" class="key-btn" data-key="G">G</button>
+    <button type="button" class="key-btn" data-key="H">H</button>
+    <button type="button" class="key-btn" data-key="J">J</button>
+    <button type="button" class="key-btn" data-key="K">K</button>
+    <button type="button" class="key-btn" data-key="L">L</button>
+  </div>
+
+  <div class="keypad-row">
+    <button type="button" class="key-btn key-wide" data-action="backspace">WIS</button>
+
+    <button type="button" class="key-btn" data-key="Z">Z</button>
+    <button type="button" class="key-btn" data-key="X">X</button>
+    <button type="button" class="key-btn" data-key="C">C</button>
+    <button type="button" class="key-btn" data-key="V">V</button>
+    <button type="button" class="key-btn" data-key="B">B</button>
+    <button type="button" class="key-btn" data-key="N">N</button>
+    <button type="button" class="key-btn" data-key="M">M</button>
+
+    <button type="button" class="key-btn key-submit" data-action="submit">OK</button>
+  </div>
+
+</div>
+
+<div class="notice" id="notice"></div>
+      
       <div class="legend mini">
         <div><strong>Groen</strong> = goed</div>
         <div><strong>Geel</strong> = zit erin</div>
