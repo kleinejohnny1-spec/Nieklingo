@@ -886,10 +886,10 @@ els.copyCodeBtn.addEventListener("click", async () => {
   const code = state.room?.code || state.roomCode;
   if (!code) return;
 
-  const joinUrl = `${location.origin}?room=${code}`;
+  const joinUrl = `https://lingo-v3.onrender.com/?room=${code}`;
 
   const text =
-`🎮 Join mijn Lingo kamer!
+`🎮 Join Johnny's Lingo kamer!
 
 Kamercode: ${code}
 
