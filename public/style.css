@@ -1330,3 +1330,26 @@ body.kb-open .guessbar {
     display: none !important;
   }
 }
+
+@media (min-width: 701px) {
+  #mobileKeypad,
+  .mobile-keypad,
+  .keypad-row,
+  .key-btn {
+    display: none !important;
+  }
+}
+
+.top-scorebar {
+  max-width: 420px !important;
+  min-height: 44px !important;
+  border-radius: 14px !important;
+  background: linear-gradient(180deg, #123a7a, #08245a) !important;
+}
+
+.top-scorebar span {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  padding: 6px 10px !important;
+}

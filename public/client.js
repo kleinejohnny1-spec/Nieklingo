@@ -43,9 +43,10 @@ function setupMobileKeypad() {
       if (navigator.vibrate) {
         navigator.vibrate(12);
       }
-       
-      await unlockAudio(false);
-playFlipSound();
+       await unlockAudio(false);
+       playTypeSound();
+       await unlockAudio(false);
+       playFlipSound();
 
       if (action === "backspace") {
         handleVirtualKey("BACKSPACE");
