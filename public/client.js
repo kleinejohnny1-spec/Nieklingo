@@ -1091,17 +1091,7 @@ const params = new URLSearchParams(window.location.search);
 const roomFromUrl = params.get("room");
 
 if (roomFromUrl) {
-
   els.roomCodeInput.value = roomFromUrl.toUpperCase();
-
-  setTimeout(() => {
-
-    socket.emit("room:join", {
-      code: roomFromUrl.toUpperCase(),
-      name: getName()
-    });
-
-  }, 600);
 }
 
 setupMobileKeypad();
