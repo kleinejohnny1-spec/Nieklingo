@@ -159,7 +159,7 @@ async function unlockAudio(playTest = true) {
 
 function playTick() { beep(600, 0.055, "square", 0.14); beep(460, 0.04, "square", 0.10, 0.018); }
 function playTypeSound() {
-  beep(880, 0.045, "triangle", 0.08);
+  beep(540, 0.055, "triangle", 0.055);
 }
 function playSubmitSound() { beep(780, 0.06, "square", 0.11); }
 function playStartSound() { beep(620, 0.09, "square", 0.14); beep(900, 0.13, "square", 0.18, 0.11); }

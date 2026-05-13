@@ -127,29 +127,24 @@ html, body {
 .top-scorebar {
   display: flex;
   justify-content: center;
-  gap: 14px;
-
+  gap: 12px;
   margin: 6px 0 10px 0;
-
   font-size: 14px;
-  font-weight: 800;
-
+  font-weight: 900;
   color: #fff;
-
   flex-wrap: wrap;
   text-align: center;
 }
 
 .top-scorebar span {
-  background: rgba(0,0,0,.25);
-  padding: 6px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,.12);
-}
-
-.board-row {
-  display: grid;
-  gap: 6px;
+  background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(0,0,0,.34));
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    0 6px 14px rgba(0,0,0,.22);
+  text-shadow: 0 1px 2px rgba(0,0,0,.45);
 }
 
 .board.len-4 .board-row { grid-template-columns: repeat(4, 48px); }
