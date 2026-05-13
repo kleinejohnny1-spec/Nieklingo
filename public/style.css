@@ -124,6 +124,10 @@ html, body {
   margin-top: 20px !important;
 }
 
+.board-row {
+  display: grid;
+}
+
 .top-scorebar {
   display: flex;
   justify-content: center;
@@ -902,13 +906,23 @@ body.kb-open .timerbar-wrap {
     gap: 3px !important;
   }
 
-  body.kb-open .board-row {
-    gap: 3px !important;
-  }
+ body.kb-open .board-row {
+  display: grid !important;
+  gap: 3px !important;
+  justify-content: center !important;
+}
 
-  body.kb-open .board.len-5 .board-row {
-    grid-template-columns: repeat(5, 42px) !important;
-  }
+body.kb-open .board.len-4 .board-row {
+  grid-template-columns: repeat(4, 36px) !important;
+}
+
+body.kb-open .board.len-5 .board-row {
+  grid-template-columns: repeat(5, 36px) !important;
+}
+
+body.kb-open .board.len-6 .board-row {
+  grid-template-columns: repeat(6, 36px) !important;
+}
 
 body.kb-open .cell {
   width: 36px !important;
@@ -916,18 +930,9 @@ body.kb-open .cell {
   font-size: 20px !important;
 }
 
-body.kb-open .board.len-5 .board-row {
-  grid-template-columns: repeat(5, 36px) !important;
-}
-
-body.kb-open .board.len-5 .board-row {
-  grid-template-columns: repeat(5, 36px) !important;
-}
-
-  body.kb-open .guessbar {
-    margin-top: 6px !important;
-    padding: 6px !important;
-  }
+body.kb-open .guessbar {
+  margin-top: 6px !important;
+  padding: 6px !important;
 }
 
 @media (max-width: 700px) {
