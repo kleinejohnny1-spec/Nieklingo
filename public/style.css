@@ -189,14 +189,28 @@ html, body {
 }
 
 .cell.flip {
-  animation: tileFlip 420ms ease-in-out;
+  animation: tileFlip 520ms cubic-bezier(0.22, 0.78, 0.22, 1);
   transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 @keyframes tileFlip {
-  0% { transform: rotateY(0deg); }
-  50% { transform: rotateY(90deg); }
-  100% { transform: rotateY(0deg); }
+  0% {
+    transform: rotateY(0deg) scale(1);
+  }
+
+  42% {
+    transform: rotateY(88deg) scale(1.04);
+  }
+
+  52% {
+    transform: rotateY(92deg) scale(1.04);
+  }
+
+  100% {
+    transform: rotateY(0deg) scale(1);
+  }
 }
 
 .guessbar {
