@@ -155,7 +155,9 @@ async function unlockAudio(playTest = true) {
 }
 
 function playTick() { beep(600, 0.055, "square", 0.14); beep(460, 0.04, "square", 0.10, 0.018); }
-function playTypeSound() { beep(740, 0.06, "square", 0.16); beep(620, 0.03, "square", 0.08, 0.015); }
+function playTypeSound() {
+  beep(740, 0.12, "square", 0.30);
+}
 function playSubmitSound() { beep(780, 0.06, "square", 0.11); }
 function playStartSound() { beep(620, 0.09, "square", 0.14); beep(900, 0.13, "square", 0.18, 0.11); }
 
@@ -997,7 +999,7 @@ els.clearBtn.addEventListener("click", () => {
 });
 
 els.guessInput.addEventListener("input", async () => {
-  const oldValue = els.guessInput.dataset.prevValue || "";
+
   const maxLength = Number(els.guessInput.maxLength || 5);
 
   els.guessInput.value = els.guessInput.value
@@ -1005,19 +1007,16 @@ els.guessInput.addEventListener("input", async () => {
     .replace(/[^A-Z]/g, "")
     .slice(0, maxLength);
 
-  if (els.guessInput.value.length > oldValue.length) {
-    await unlockAudio(false);
-    playTypeSound();
-  }
+  navigator.vibrate?.(20);
+
+  playTypeSound();
 
   els.guessInput.dataset.prevValue = els.guessInput.value;
 });
 
-els.guessInput.addEventListener("keydown", async (e) => {
-  if (e.key === "Enter" && !els.submitBtn.disabled) {
-    e.preventDefault();
-    await submitGuessNow();
-  }
+els.guessInput.addEventListener("keyup", () => {
+  navigator.vibrate?.(20);
+  playTypeSound();
 });
 
 if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {

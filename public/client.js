@@ -33,7 +33,7 @@ function setupMobileKeypad() {
   els.keyButtons.forEach((btn) => {
     btn.setAttribute("type", "button");
 
-    btn.addEventListener("pointerdown", (e) => {
+    btn.addEventListener("click", async (e) => {
       e.preventDefault();
       e.stopPropagation();
 
@@ -43,6 +43,9 @@ function setupMobileKeypad() {
       if (navigator.vibrate) {
         navigator.vibrate(12);
       }
+       
+      await unlockAudio(false);
+playFlipSound();
 
       if (action === "backspace") {
         handleVirtualKey("BACKSPACE");
@@ -155,7 +158,9 @@ async function unlockAudio(playTest = true) {
 }
 
 function playTick() { beep(600, 0.055, "square", 0.14); beep(460, 0.04, "square", 0.10, 0.018); }
-function playTypeSound() { beep(740, 0.06, "square", 0.16); beep(620, 0.03, "square", 0.08, 0.015); }
+function playTypeSound() {
+  beep(950, 0.14, "triangle", 0.20);
+}
 function playSubmitSound() { beep(780, 0.06, "square", 0.11); }
 function playStartSound() { beep(620, 0.09, "square", 0.14); beep(900, 0.13, "square", 0.18, 0.11); }
 
@@ -1012,6 +1017,7 @@ els.guessInput.addEventListener("input", async () => {
 
   els.guessInput.dataset.prevValue = els.guessInput.value;
 });
+
 
 els.guessInput.addEventListener("keydown", async (e) => {
   if (e.key === "Enter" && !els.submitBtn.disabled) {
