@@ -1419,8 +1419,10 @@ body.kb-open .guessbar {
 
   #mobileKeypad {
     padding-bottom: 18px !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 12px !important;
     min-height: 160px !important;
+
+    transform: translateY(-8px) !important;
   }
 
   .game {
@@ -1428,3 +1430,5 @@ body.kb-open .guessbar {
   }
 
 }
+
+ 
