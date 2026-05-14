@@ -1431,4 +1431,11 @@ body.kb-open .guessbar {
 
 }
 
+@media (max-width: 700px) {
+  #mobileKeypad,
+  .mobile-keypad {
+    outline: 4px solid red !important;
+    transform: translateY(-30px) !important;
+  }
+}
  
