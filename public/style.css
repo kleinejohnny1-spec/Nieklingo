@@ -1413,3 +1413,18 @@ body.kb-open .guessbar {
     font-weight: 900 !important;
   }
 }
+
+/* OPPO keypad altijd volledig zichtbaar houden */
+@media (max-width: 700px) {
+
+  #mobileKeypad {
+    padding-bottom: 18px !important;
+    margin-bottom: 8px !important;
+    min-height: 160px !important;
+  }
+
+  .game {
+    padding-bottom: 170px !important;
+  }
+
+}
