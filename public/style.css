@@ -1400,3 +1400,16 @@ body.kb-open .guessbar {
     padding: 0 2px !important;
   }
 }
+
+/* OPPO: lange scorebalk onder timer beter leesbaar */
+@media (max-width: 700px) {
+  #topScoreBar {
+    font-size: 15px !important;
+    font-weight: 900 !important;
+  }
+
+  #topScoreBar span {
+    font-size: 15px !important;
+    font-weight: 900 !important;
+  }
+}
