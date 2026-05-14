@@ -1387,3 +1387,16 @@ body.kb-open .guessbar {
     box-shadow: none !important;
   }
 }
+
+/* OPPO: scoretekst beter leesbaar zonder balk groter te maken */
+@media (max-width: 700px) {
+  .top-scorebar {
+    font-size: 13px !important;
+    font-weight: 900 !important;
+  }
+
+  .top-scorebar span {
+    font-size: 13px !important;
+    padding: 0 2px !important;
+  }
+}
