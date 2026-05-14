@@ -1435,7 +1435,7 @@ body.kb-open .guessbar {
 
   #mobileKeypad,
   .mobile-keypad {
-    transform: translateY(-22px) !important;
+    transform: translateY(-18px) !important;
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
   }
