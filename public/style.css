@@ -1354,3 +1354,36 @@ body.kb-open .guessbar {
   border: 0 !important;
   padding: 6px 10px !important;
 }
+
+/* PC scorebar - clean pill */
+@media (min-width: 701px) {
+  .top-scorebar {
+    width: fit-content !important;
+    max-width: none !important;
+    min-height: auto !important;
+
+    margin: 6px auto 14px auto !important;
+    padding: 8px 18px !important;
+
+    display: flex !important;
+    gap: 22px !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+    border-radius: 16px !important;
+    background: rgba(7, 24, 58, 0.88) !important;
+    border: 1px solid rgba(255,255,255,.22) !important;
+
+    font-size: 18px !important;
+    font-weight: 900 !important;
+  }
+
+  .top-scorebar span {
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}
