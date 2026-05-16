@@ -235,43 +235,45 @@ function createRoom(hostSocket) {
 
 function endRound(room, message, winnerId = null) {
   if (!room.round) return;
+
   if (room.round.timer) {
     clearInterval(room.round.timer);
     room.round.timer = null;
   }
+
   room.round.status = "ended";
   room.round.winnerId = winnerId;
   room.round.message = message;
+
   emitRoom(room);
 }
 
 function startRound(room) {
-  if (room.players.length < 2) return { ok: false, error: "Je hebt 2 spelers nodig." };
+  if (room.players.length < 2) {
+    return { ok: false, error: "Je hebt 2 spelers nodig." };
+  }
 
   const target = chooseBalancedWord(room);
   const board = createFreshBoard(room.settings.wordLength);
   const lockedPrefix = target[0];
+
   stampLockedPrefix(board, lockedPrefix);
 
   for (const player of room.players) {
-  if (typeof room.scores[player.id] !== "number") room.scores[player.id] = 0;
-  if (typeof room.roundWins[player.id] !== "number") room.roundWins[player.id] = 0;
-}
+    if (typeof room.scores[player.id] !== "number") room.scores[player.id] = 0;
+    if (typeof room.roundWins[player.id] !== "number") room.roundWins[player.id] = 0;
+  }
 
-let nextStarter;
+  if (typeof room.starterIndex !== "number") {
+    room.starterIndex = Math.floor(Math.random() * room.players.length);
+  } else {
+    room.starterIndex = (room.starterIndex + 1) % room.players.length;
+  }
 
-if (!room.lastStarter) {
-  nextStarter = room.players[Math.floor(Math.random() * room.players.length)].id;
-} else {
-  nextStarter =
-    room.lastStarter === room.players[0].id
-      ? room.players[1].id
-      : room.players[0].id;
-}
+  const nextStarter = room.players[room.starterIndex].id;
 
-room.lastStarter = nextStarter;
-console.log("STARTER IS:", nextStarter);
-
+  room.lastStarter = nextStarter;
+  console.log("STARTER IS:", nextStarter, "INDEX:", room.starterIndex);
 
   room.round = {
     status: "playing",
@@ -287,10 +289,6 @@ console.log("STARTER IS:", nextStarter);
     message: `Nieuwe ronde. Beginletter is ${lockedPrefix}.`,
     timer: null
   };
-
-  for (const player of room.players) {
-    if (typeof room.scores[player.id] !== "number") room.scores[player.id] = 0;
-  }
 
   room.round.timer = setInterval(() => {
     const currentRoom = rooms.get(room.code);
