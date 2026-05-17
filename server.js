@@ -391,8 +391,7 @@ room.roundWins[playerId] = room.roundWins[playerId] || 0;
     if (!result.ok) socket.emit("error:message", result.error);
   });
 
-  socket.on("round:togglePause", ({ code }) => {
-
+ socket.on("round:togglePause", ({ code }) => {
   console.log("PAUZE KNOP ONTVANGEN", code);
 
   const room = rooms.get(String(code || "").toUpperCase());
@@ -407,6 +406,7 @@ room.roundWins[playerId] = room.roundWins[playerId] || 0;
     emitRoom(room);
   } else if (room.round.status === "paused") {
     room.round.status = "playing";
+    room.round.timeLeft = room.settings.timeLimit;
     room.round.message = "Spel hervat door de host.";
     emitRoom(room);
   }
