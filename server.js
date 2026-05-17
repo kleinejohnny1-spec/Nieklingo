@@ -241,13 +241,12 @@ function endRound(room, message, winnerId = null) {
     room.round.timer = null;
   }
 
-  room.round.status = "ended";
-  room.round.winnerId = winnerId;
-  room.round.message = message;
-
+ } else if (room.round.status === "paused") {
+  room.round.status = "playing";
+  room.round.timeLeft = room.settings.timeLimit;
+  room.round.message = "Spel hervat door de host.";
   emitRoom(room);
 }
-
 function startRound(room) {
   if (room.players.length < 2) {
     return { ok: false, error: "Je hebt 2 spelers nodig." };

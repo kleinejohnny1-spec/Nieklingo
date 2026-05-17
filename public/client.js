@@ -69,6 +69,7 @@ let playerId = localStorage.getItem("playerId");
 if (!playerId) {
   playerId = "player-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
   localStorage.setItem("playerId", playerId);
+
 }
 
 let previousBoard = [];
@@ -82,7 +83,7 @@ const els = {
   nameInput: document.getElementById("nameInput"),
   createRoomBtn: document.getElementById("createRoomBtn"),
   joinRoomBtn: document.getElementById("joinRoomBtn"),
-  
+
   topScoreBar: document.getElementById("topScoreBar"),
   roomCodeInput: document.getElementById("roomCodeInput"),
   roomCodeDisplay: document.getElementById("roomCodeDisplay"),
@@ -105,6 +106,7 @@ const els = {
   mobileKeypad: document.getElementById("mobileKeypad"),
   keyButtons: document.querySelectorAll(".key-btn"),
 };
+
 
 const audio = {
   ready: false,
@@ -865,34 +867,38 @@ function handleAudioTransitions(prevRoom, nextRoom) {
 }
 
 els.createRoomBtn.addEventListener("click", async () => {
+  await unlockAudio(false);
+
   setNotice("");
 
-  // HARDE TEST: als je dit niet ziet, laad je oude client.js
-  els.statusTitle.textContent = "Kamer wordt gemaakt...";
-  els.statusSub.textContent = "Wacht op server...";
-  els.roomCodeDisplay.textContent = ".....";
-
-  console.log("KLIK KAMER MAKEN - NIEUWE CLIENT.JS WORDT GEBRUIKT");
-
+  
   socket.emit("room:create", {
-  name: getName(),
-  playerId
-});
+    name: getName(),
+    playerId
+  });
+
   setNotice("Kamer wordt aangemaakt...", "ok");
 });
 
 els.joinRoomBtn.addEventListener("click", async () => {
   const code = (els.roomCodeInput.value || "").trim().toUpperCase();
-  if (!code) return setNotice("Vul eerst een kamercode in.", "error");
-  await unlockAudio(false);
-  setNotice("");
-  socket.emit("room:join", {
-  code,
-  name: getName(),
-  playerId
- });
-});
 
+  if (!code) {
+    return setNotice("Vul eerst een kamercode in.", "error");
+  }
+
+  await unlockAudio(false);
+
+  setNotice("");
+
+  localStorage.setItem("playerName", getName());
+
+  socket.emit("room:join", {
+    code,
+    name: getName(),
+    playerId
+  });
+});
 els.copyCodeBtn.addEventListener("click", async () => {
   const code = state.room?.code || state.roomCode;
   if (!code) return;
