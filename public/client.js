@@ -588,12 +588,12 @@ function updatePlayers() {
     return;
   }
 
-
-
   els.playersList.innerHTML = state.room.players.map((p, index) => {
     const hostBadge = p.id === state.room.hostId ? ' <span class="badge">host</span>' : "";
     const meBadge = p.id === state.selfId ? ' <span class="badge">jij</span>' : "";
-    return `<div>Speler ${index + 1}: <strong>${escapeHtml(p.name)}</strong>${hostBadge}${meBadge}</div>`;
+    const wins = state.room.roundWins?.[p.id] ?? 0;
+
+    return `<div>Speler ${index + 1}: <strong>${escapeHtml(p.name)}</strong> — ${wins} ${wins === 1 ? "winst" : "winsten"}${hostBadge}${meBadge}</div>`;
   }).join("");
 }
 
@@ -607,20 +607,24 @@ function updateTopScoreBar(room) {
     const name = p.name || `Speler ${index + 1}`;
     const score = scores[p.id] || 0;
 
-    return `<span>${name}: ${score}</span>`;
+   const wins = room.roundWins?.[p.id] ?? 0;
+
+return `<span>${name}: ${score} | ${wins}W</span>`;
   }).join("");
 }
 
- 
- function updateScores() {
+function updateScores() {
   if (!state.room) {
     els.scoreList.textContent = "Nog geen score.";
     return;
   }
 
-  els.scoreList.innerHTML = state.room.players.map((p) =>
-    `<div><strong>${escapeHtml(p.name)}</strong>: ${state.room.roundWins?.[p.id] ?? 0}</div>`
-  ).join("");
+  els.scoreList.innerHTML = state.room.players.map((p) => {
+    const punten = state.room.scores?.[p.id] ?? 0;
+    const wins = state.room.roundWins?.[p.id] ?? 0;
+
+    return `<div><strong>${escapeHtml(p.name)}</strong> — ${punten} punten | ${wins} ${wins === 1 ? "winst" : "winsten"}</div>`;
+  }).join("");
 }
 
 function updateControls() {
