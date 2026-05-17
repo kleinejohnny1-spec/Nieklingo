@@ -393,78 +393,86 @@ room.roundWins[playerId] = room.roundWins[playerId] || 0;
   });
 
   socket.on("round:togglePause", ({ code }) => {
-    console.log("PAUZE KNOP ONTVANGEN", code);
 
-    const room = rooms.get(String(code || "").toUpperCase());
-    const player = room?.players.find((p) => p.socketId === socket.id);
-    if (!room || room.hostId !== player?.id) return;
-    if (room.round.status === "playing") {
-      room.round.status = "paused";
-      room.round.message = "Spel gepauzeerd door de host.";
-      emitRoom(room);
-    } else if (room.round.status === "paused") {
-      room.round.status = "playing";
-      room.round.message = "Spel hervat door de host.";
-      emitRoom(room);
-    }
-  });
+  console.log("PAUZE KNOP ONTVANGEN", code);
 
-  socket.on("guess:submit", ({ code, guess }) => {
-    const room = rooms.get(String(code || "").toUpperCase());
-    if (!room || !room.round || room.round.status !== "playing") return;
+  const room = rooms.get(String(code || "").toUpperCase());
+  const player = room?.players.find((p) => p.socketId === socket.id);
 
-    const player = room.players.find((p) => p.socketId === socket.id);
+  if (!room || room.hostId !== player?.id) return;
+  if (!room.round) return;
 
-    if (room.round.currentTurn !== player?.id) {
-      return socket.emit("error:message", "Wacht op je beurt.");
-    }
+  if (room.round.status === "playing") {
+    room.round.status = "paused";
+    room.round.message = "Spel gepauzeerd door de host.";
+    emitRoom(room);
+  } else if (room.round.status === "paused") {
+    room.round.status = "playing";
+    room.round.message = "Spel hervat door de host.";
+    emitRoom(room);
+  }
+});
 
-    const cleaned = String(guess || "").toUpperCase().replace(/[^A-Z]/g, "");
+socket.on("guess:submit", ({ code, guess }) => {
+  const room = rooms.get(String(code || "").toUpperCase());
+  if (!room || !room.round || room.round.status !== "playing") return;
 
-    if (cleaned.length !== room.round.wordLength) {
-      return socket.emit("error:message", `Gebruik precies ${room.round.wordLength} letters.`);
-    }
+  const player = room.players.find((p) => p.socketId === socket.id);
 
-    if (cleaned[0] !== room.round.lockedPrefix) {
-      return socket.emit("error:message", `Je woord moet beginnen met ${room.round.lockedPrefix}.`);
-    }
+  if (room.round.currentTurn !== player?.id) {
+    return socket.emit("error:message", "Wacht op je beurt.");
+  }
 
-    const row = room.round.currentRow;
-    const results = scoreGuess(cleaned, room.round.target);
+  const cleaned = String(guess || "").toUpperCase().replace(/[^A-Z]/g, "");
 
-    for (let i = 0; i < cleaned.length; i++) {
-      room.round.board[row][i] = {
-        letter: cleaned[i],
-        state: results[i],
-        locked: i === 0
-      };
-    }
+  if (cleaned.length !== room.round.wordLength) {
+    return socket.emit("error:message", `Gebruik precies ${room.round.wordLength} letters.`);
+  }
+
+  if (cleaned[0] !== room.round.lockedPrefix) {
+    return socket.emit("error:message", `Je woord moet beginnen met ${room.round.lockedPrefix}.`);
+  }
+
+  const row = room.round.currentRow;
+  const results = scoreGuess(cleaned, room.round.target);
+
+  for (let i = 0; i < cleaned.length; i++) {
+    room.round.board[row][i] = {
+      letter: cleaned[i],
+      state: results[i],
+      locked: i === 0
+    };
+  }
+
   if (cleaned === room.round.target) {
 
-  room.roundWins[player.id] = (room.roundWins[player.id] || 0) + 1;
+    room.roundWins[player.id] = (room.roundWins[player.id] || 0) + 1;
 
-  return endRound(
-    room,
-    `${room.players.find((p) => p.id === player.id)?.name || "Speler"} raadde het woord en wint de ronde.`,
-    player.id
-  );
-}
+    const points = pointsForRow(row);
+    room.scores[player.id] = (room.scores[player.id] || 0) + points;
 
-    room.round.currentRow += 1;
+    return endRound(
+      room,
+      `${room.players.find((p) => p.id === player.id)?.name || "Speler"} raadde het woord en wint de ronde.`,
+      player.id
+    );
+  }
 
-    if (room.round.currentRow >= 5) {
-      return endRound(room, `Geen pogingen meer. Het woord was ${room.round.target}.`, null);
-    }
+  room.round.currentRow += 1;
 
-    const currentIndex = room.players.findIndex((p) => p.id === player.id);
-    const nextIndex = currentIndex === 0 ? 1 : 0;
+  if (room.round.currentRow >= 5) {
+    return endRound(room, `Geen pogingen meer. Het woord was ${room.round.target}.`, null);
+  }
 
-    room.round.currentTurn = room.players[nextIndex].id;
-    room.round.timeLeft = room.settings.timeLimit;
-    room.round.message = `Niet goed. Beurt naar ${room.players[nextIndex]?.name || "speler"}.`;
+  const currentIndex = room.players.findIndex((p) => p.id === player.id);
+  const nextIndex = currentIndex === 0 ? 1 : 0;
 
-    emitRoom(room);
-  });
+  room.round.currentTurn = room.players[nextIndex].id;
+  room.round.timeLeft = room.settings.timeLimit;
+  room.round.message = `Niet goed. Beurt naar ${room.players[nextIndex]?.name || "speler"}.`;
+
+  emitRoom(room);
+});
 
   socket.on("disconnect", () => {
     for (const [code, room] of rooms.entries()) {

@@ -989,11 +989,6 @@ async function submitGuessNow() {
     code: state.roomCode,
     guess: els.guessInput.value
   });
-
-  socket.emit("guess:submit", {
-  code: state.roomCode,
-  guess: els.guessInput.value
-});
 }
 
 els.submitBtn.addEventListener("pointerdown", async (e) => {
