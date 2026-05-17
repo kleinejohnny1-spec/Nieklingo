@@ -241,7 +241,7 @@ function endRound(room, message, winnerId = null) {
     room.round.timer = null;
   }
 
- } else if (room.round.status === "paused") {
+  else if (room.round.status === "paused") {
   room.round.status = "playing";
   room.round.timeLeft = room.settings.timeLimit;
   room.round.message = "Spel hervat door de host.";
